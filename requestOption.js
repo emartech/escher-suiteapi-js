@@ -46,14 +46,14 @@ SuiteRequestOption.prototype = {
 
 };
 
-SuiteRequestOption.getForSecure = function(environment, rejectUnauthorized) {
+SuiteRequestOption.getSecureFor = function(environment, rejectUnauthorized) {
   return new SuiteRequestOption(environment, {
     rejectUnauthorized: rejectUnauthorized,
     port: 443
   });
 };
 
-SuiteRequestOption.getForUnsecure = function(environment) {
+SuiteRequestOption.getUnsecureFor = function(environment) {
   return new SuiteRequestOption(environment, {
     secure: false,
     port: 80

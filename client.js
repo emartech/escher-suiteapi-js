@@ -3,6 +3,7 @@ var http = require('http');
 var https = require('https');
 var _ = require('lodash');
 var Promise = require("bluebird");
+var Options = require('./requestOption');
 
 var SuiteRequest = function(accessKeyId, apiSecret, requestOptions) {
   var escherConfig = _.extend(_.cloneDeep(SuiteRequest.EscherConstants), {
@@ -87,3 +88,4 @@ SuiteRequest.EscherConstants = {
 };
 
 module.exports = SuiteRequest;
+module.exports.Options = Options;

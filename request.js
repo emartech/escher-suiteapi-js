@@ -2,7 +2,7 @@ var Escher = require('escher-auth');
 var http = require('http');
 var https = require('https');
 var _ = require('lodash');
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 var Options = require('./requestOption');
 
 var SuiteRequest = function(accessKeyId, apiSecret, requestOptions) {
@@ -44,18 +44,23 @@ SuiteRequest.prototype = {
     return new Promise(function(resolve, reject) {
       var protocol = (this._options.secure) ? https : http;
       var req = protocol.request(requestOptions, function(resp) {
+        var responseChunks = [];
 
-        var fullResponseBody = '';
-
-        resp.on('data', function(chunk) {
-          fullResponseBody += chunk;
-        });
+        resp.on('data', function(chunk) { response.push(responseChunks); });
 
         resp.on('end', function() {
-          resolve(fullResponseBody);
+          var response = {
+            statusCode = resp.statusCode,
+            data: JSON.parse(responseChunks.join(''))
+          };
+
+          if (resp.statusCode >= 400) return reject(response);
+          return resolve(response);
         });
 
-      }).on("error", reject);
+      }).on('error', function(e) {
+        reject({ statusCode: 500, data: e.message })
+      );
 
       if (payload) req.write(payload);
       req.end();

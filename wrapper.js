@@ -1,5 +1,6 @@
 var Promise = require('bluebird');
 var SuiteRequestError = require('./requestError');
+var logger = require('logentries-logformat')('suite-request');
 
 var RequestWrapper = function(requestOptions, protocol, payload) {
   this.requestOptions = requestOptions;
@@ -17,6 +18,7 @@ RequestWrapper.prototype = {
 
 
   _sendRequest: function(resolve, reject) {
+    logger.log('send', { host: this.requestOptions.host, url: this.requestOptions.url });
     var req = this.protocol.request(this.requestOptions, function(resp) {
       var responseChunks = [];
 
@@ -24,7 +26,10 @@ RequestWrapper.prototype = {
 
       resp.on('end', function() {
         var data = JSON.parse(responseChunks.join(''));
-        if (resp.statusCode >= 400) return reject(new SuiteRequestError('Error in http response', resp.statusCode, data));
+        if (resp.statusCode >= 400) {
+          logger.error('server error', data.replyText, { code: resp.statusCode });
+          return reject(new SuiteRequestError('Error in http response', resp.statusCode, data));
+        }
 
         return resolve({
           statusCode: resp.statusCode,
@@ -33,6 +38,7 @@ RequestWrapper.prototype = {
       });
 
     }).on('error', function(e) {
+      logger.error('fatal error', e.message);
       reject(new SuiteRequestError(e.message, 500));
     });
 

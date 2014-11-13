@@ -1,4 +1,4 @@
-var _ = require('lodash')''
+var _ = require('lodash');
 
 var SuiteRequestError = function(message, code, data) {
   this.message = message;

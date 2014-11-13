@@ -2,10 +2,9 @@ var Escher = require('escher-auth');
 var http = require('http');
 var https = require('https');
 var _ = require('lodash');
-var Promise = require('bluebird');
 var Options = require('./requestOption');
+var Wrapper = require('./wrapper');
 var SuiteRequestError = require('./requestError');
-
 
 
 var SuiteRequest = function(accessKeyId, apiSecret, requestOptions) {
@@ -24,7 +23,7 @@ SuiteRequest.prototype = {
     var options = this._getOptionsFor('GET', path);
     var signedOptions = this._signRequest(options, '');
 
-    return this._getRequestFor(signedOptions);
+    return this._getRequestFor(signedOptions).send();
   },
 
   post: function(path, data) {
@@ -32,7 +31,7 @@ SuiteRequest.prototype = {
     var payload = JSON.stringify(data);
     var signedOptions = this._signRequest(options, payload);
 
-    return this._getRequestFor(signedOptions, payload);
+    return this._getRequestFor(signedOptions, payload).send();
   },
 
   setOptions: function(requestOptions) {
@@ -44,34 +43,8 @@ SuiteRequest.prototype = {
   },
 
   _getRequestFor: function(requestOptions, payload) {
-    return new Promise(function(resolve, reject) {
-      this._sendRequest(requestOptions, payload, resolve, reject);
-    }.bind(this));
-  },
-
-  _sendRequest: function(requestOptions, payload, resolve, reject) {
     var protocol = (this._options.secure) ? https : http;
-    var req = protocol.request(requestOptions, function(resp) {
-      var responseChunks = [];
-
-      resp.on('data', function(chunk) { responseChunks.push(chunk); });
-
-      resp.on('end', function() {
-        var data = JSON.parse(responseChunks.join(''));
-        if (resp.statusCode >= 400) return reject(new SuiteRequestError('Error in http response', resp.statusCode, data));
-
-        return resolve({
-          statusCode: resp.statusCode,
-          data: data
-        });
-      });
-
-    }).on('error', function(e) {
-      reject(new SuiteRequestError(e.message, resp.statusCode));
-    });
-
-    if (payload) req.write(payload);
-    req.end();
+    return new Wrapper(requestOptions, protocol, payload);
   },
 
   _getOptionsFor: function(type, path) {

@@ -46,11 +46,11 @@ SuiteRequest.prototype = {
       var req = protocol.request(requestOptions, function(resp) {
         var responseChunks = [];
 
-        resp.on('data', function(chunk) { response.push(responseChunks); });
+        resp.on('data', function(chunk) { responseChunks.push(chunk); });
 
         resp.on('end', function() {
           var response = {
-            statusCode = resp.statusCode,
+            statusCode: resp.statusCode,
             data: JSON.parse(responseChunks.join(''))
           };
 
@@ -59,8 +59,8 @@ SuiteRequest.prototype = {
         });
 
       }).on('error', function(e) {
-        reject({ statusCode: 500, data: e.message })
-      );
+        reject({ statusCode: 500,  data: e.message });
+      });
 
       if (payload) req.write(payload);
       req.end();

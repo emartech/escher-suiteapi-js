@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var SuiteRequestError = require('./requestError');
-var logger = require('logentries-logformat')('suite-request');
+var logger = require('logentries-logformat')('suiterequest');
 
 var RequestWrapper = function(requestOptions, protocol, payload) {
   this.requestOptions = requestOptions;

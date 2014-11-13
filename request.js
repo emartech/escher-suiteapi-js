@@ -4,6 +4,9 @@ var https = require('https');
 var _ = require('lodash');
 var Promise = require('bluebird');
 var Options = require('./requestOption');
+var SuiteRequestError = require('./requestError');
+
+
 
 var SuiteRequest = function(accessKeyId, apiSecret, requestOptions) {
   var escherConfig = _.extend(_.cloneDeep(SuiteRequest.EscherConstants), {
@@ -42,29 +45,33 @@ SuiteRequest.prototype = {
 
   _getRequestFor: function(requestOptions, payload) {
     return new Promise(function(resolve, reject) {
-      var protocol = (this._options.secure) ? https : http;
-      var req = protocol.request(requestOptions, function(resp) {
-        var responseChunks = [];
+      this._sendRequest(requestOptions, payload, resolve, reject);
+    }.bind(this));
+  },
 
-        resp.on('data', function(chunk) { responseChunks.push(chunk); });
+  _sendRequest: function(requestOptions, payload, resolve, reject) {
+    var protocol = (this._options.secure) ? https : http;
+    var req = protocol.request(requestOptions, function(resp) {
+      var responseChunks = [];
 
-        resp.on('end', function() {
-          var response = {
-            statusCode: resp.statusCode,
-            data: JSON.parse(responseChunks.join(''))
-          };
+      resp.on('data', function(chunk) { responseChunks.push(chunk); });
 
-          if (resp.statusCode >= 400) return reject(response);
-          return resolve(response);
+      resp.on('end', function() {
+        var data = JSON.parse(responseChunks.join(''));
+        if (resp.statusCode >= 400) return reject(new SuiteRequestError('Error in http response', resp.statusCode, data));
+
+        return resolve({
+          statusCode: resp.statusCode,
+          data: data
         });
-
-      }).on('error', function(e) {
-        reject({ statusCode: 500,  data: e.message });
       });
 
-      if (payload) req.write(payload);
-      req.end();
-    }.bind(this));
+    }).on('error', function(e) {
+      reject(new SuiteRequestError(e.message, resp.statusCode));
+    });
+
+    if (payload) req.write(payload);
+    req.end();
   },
 
   _getOptionsFor: function(type, path) {
@@ -94,3 +101,4 @@ SuiteRequest.EscherConstants = {
 
 module.exports = SuiteRequest;
 module.exports.Options = Options;
+module.exports.Error = SuiteRequestError;

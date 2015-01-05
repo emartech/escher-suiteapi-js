@@ -53,7 +53,6 @@ RequestWrapper.prototype = {
 
   _getLogParameters: function() {
     return {
-      protocol: this.protocol,
       host: this.requestOptions.host,
       url: this.requestOptions.url
     };

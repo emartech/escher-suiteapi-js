@@ -3,6 +3,9 @@ var SuiteRequestError = require('./requestError');
 var logger = require('logentries-logformat')('suiterequest');
 
 
+var TIMEOUT_DELAY = 5000;
+
+
 var RequestWrapper = function(requestOptions, protocol, payload) {
   this.requestOptions = requestOptions;
   this.protocol = protocol;
@@ -44,6 +47,15 @@ RequestWrapper.prototype = {
     req.on('error', function(e) {
       logger.error('fatal_error', e.message);
       reject(new SuiteRequestError(e.message, 500));
+    });
+
+    req.on('socket', function(socket) {
+      socket.setTimeout(TIMEOUT_DELAY);
+
+      socket.on('timeout', function() {
+        logger.error('timeout', 'server timed out');
+        req.abort();
+      });
     });
 
     if (this.payload) req.write(this.payload);

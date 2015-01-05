@@ -63,8 +63,8 @@ RequestWrapper.prototype = {
   },
 
 
-  _getLogParameters: function(options) {
-    return _.pick(options, ['method', 'host', 'url']);
+  _getLogParameters: function() {
+    return _.pick(this.requestOptions, ['method', 'host', 'url']);
   }
 
 };

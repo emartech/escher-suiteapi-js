@@ -28,7 +28,7 @@ RequestWrapper.prototype = {
       resp.on('end', function() {
         var data = JSON.parse(responseChunks.join(''));
         if (resp.statusCode >= 400) {
-          logger.error('server error', data.replyText, { code: resp.statusCode });
+          logger.error('server_error', data.replyText, { code: resp.statusCode });
           return reject(new SuiteRequestError('Error in http response', resp.statusCode, data));
         }
 
@@ -42,7 +42,7 @@ RequestWrapper.prototype = {
     }.bind(this));
 
     req.on('error', function(e) {
-      logger.error('fatal error', e.message);
+      logger.error('fatal_error', e.message);
       reject(new SuiteRequestError(e.message, 500));
     });
 

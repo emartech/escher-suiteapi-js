@@ -1,6 +1,7 @@
 var Promise = require('bluebird');
 var SuiteRequestError = require('./requestError');
 var logger = require('logentries-logformat')('suiterequest');
+var _ = require('lodash');
 
 
 var TIMEOUT_DELAY = 5000;
@@ -59,8 +60,12 @@ RequestWrapper.prototype = {
 
     if (this.payload) req.write(this.payload);
     req.end();
-  }
+  },
 
+
+  _getLogParameters: function(options) {
+    return _.pick(options, ['method', 'host', 'url']);
+  }
 
 };
 

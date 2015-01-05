@@ -22,7 +22,6 @@ RequestWrapper.prototype = {
 
 
   _sendRequest: function(resolve, reject) {
-    logger.log('send', this._getLogParameters());
     var req = this.protocol.request(this.requestOptions, function(resp) {
       var responseChunks = [];
 
@@ -60,14 +59,6 @@ RequestWrapper.prototype = {
 
     if (this.payload) req.write(this.payload);
     req.end();
-  },
-
-
-  _getLogParameters: function() {
-    return {
-      host: this.requestOptions.host,
-      url: this.requestOptions.url
-    };
   }
 
 

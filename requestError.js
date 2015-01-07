@@ -11,6 +11,6 @@ var SuiteRequestError = function(message, code, data) {
   _.extend(this, data);
 };
 
-SuiteRequestError.prototype = Error.prototype;
+SuiteRequestError.prototype = new Error();
 
 module.exports = SuiteRequestError;

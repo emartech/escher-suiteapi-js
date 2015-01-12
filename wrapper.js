@@ -4,7 +4,7 @@ var logger = require('logentries-logformat')('suiterequest');
 var _ = require('lodash');
 
 
-var TIMEOUT_DELAY = 5000;
+var TIMEOUT_DELAY = 15000;
 
 
 var RequestWrapper = function(requestOptions, protocol, payload) {

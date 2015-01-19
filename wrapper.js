@@ -29,6 +29,11 @@ RequestWrapper.prototype = {
       resp.on('data', function(chunk) { responseChunks.push(chunk); });
 
       resp.on('end', function() {
+        if (!responseChunks.length) {
+          logger.error('server_error', 'empty response data');
+          return reject(new SuiteRequestError('Error in http response', 500, {}));
+        }
+
         var data = JSON.parse(responseChunks.join(''));
         if (resp.statusCode >= 400) {
           logger.error('server_error', data.replyText, { code: resp.statusCode });

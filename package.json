@@ -1,7 +1,7 @@
 {
   "name": "escher-suiteapi-js",
   "version": "0.0.5",
-  "description": "Escher Suite Api js",
+  "description": "Escher Suite API JS",
   "main": "request.js",
   "repository": {
     "type": "git",

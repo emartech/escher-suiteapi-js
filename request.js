@@ -39,6 +39,16 @@ SuiteRequest.prototype = {
   },
 
 
+  put: function(path, data) {
+    var options = this._getOptionsFor('PUT', path);
+    var payload = JSON.stringify(data);
+    var signedOptions = this._signRequest(options, payload);
+
+    logger.log('send', this._getLogParameters(options));
+    return this._getRequestFor(signedOptions, payload).send();
+  },
+
+
   setOptions: function(requestOptions) {
     this._options = requestOptions;
   },

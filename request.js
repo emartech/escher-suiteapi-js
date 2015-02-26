@@ -96,6 +96,10 @@ SuiteRequest.EscherConstants = {
   dateHeaderName: 'X-Ems-Date'
 };
 
+SuiteRequest.create = function(accessKeyId, apiSecret, requestOptions) {
+  return new SuiteRequest(accessKeyId, apiSecret, requestOptions);
+};
+
 module.exports = SuiteRequest;
 module.exports.Options = Options;
 module.exports.Error = SuiteRequestError;

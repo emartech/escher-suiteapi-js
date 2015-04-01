@@ -6,6 +6,7 @@ var SuiteRequestOption = function(environment, options) {
   this.host = environment;
   this.rejectUnauthorized = true;
   this.headers = [ ['content-type', 'application/json'] ];
+  this.prefix = '';
 
   if (!options) options = {};
   _.extend(this, options);
@@ -36,7 +37,8 @@ SuiteRequestOption.prototype = {
     var hash = {
       port: this.port,
       host: this.host,
-      headers: this.headers
+      headers: this.headers,
+      prefix: this.prefix
     };
 
     if (!this.rejectUnauthorized) hash.rejectUnauthorized = false;
@@ -46,17 +48,21 @@ SuiteRequestOption.prototype = {
 
 };
 
-SuiteRequestOption.getSecureFor = function(environment, rejectUnauthorized) {
+SuiteRequestOption.createForInternalApi = function(environment, rejectUnauthorized) {
   return new SuiteRequestOption(environment, {
+    prefix: '/api/v2/internal',
     rejectUnauthorized: rejectUnauthorized,
+    secure: true,
     port: 443
   });
 };
 
-SuiteRequestOption.getUnsecureFor = function(environment) {
+SuiteRequestOption.createForServiceApi = function (environment, rejectUnauthorized) {
   return new SuiteRequestOption(environment, {
-    secure: false,
-    port: 80
+    prefix: '/api/services',
+    rejectUnauthorized: rejectUnauthorized,
+    secure: true,
+    port: 443
   });
 };
 

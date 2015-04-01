@@ -66,10 +66,10 @@ SuiteRequest.prototype = {
 
 
   _getOptionsFor: function(type, path) {
-    var defaultsOptions = _.cloneDeep(this._options.toHash());
-    var realPath = '/api/v2/internal' + path;
+    var defaultOptions = _.cloneDeep(this._options.toHash());
+    var realPath =  defaultOptions.prefix + path;
 
-    return _.merge(defaultsOptions, {
+    return _.merge(defaultOptions, {
       method: type,
       url: realPath,
       path: realPath

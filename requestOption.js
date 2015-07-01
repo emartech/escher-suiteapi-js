@@ -1,10 +1,10 @@
 var _ = require('lodash');
 
 var SuiteRequestOption = function(environment, options) {
-  this.secure = true;
-  this.port = 443;
+  this.secure = options.secure !== false;
+  this.port = options.port || 443;
   this.host = environment;
-  this.rejectUnauthorized = true;
+  this.rejectUnauthorized = options.rejectUnauthorized !== false;
   this.headers = [ ['content-type', 'application/json'] ];
   this.prefix = '';
 
@@ -49,21 +49,26 @@ SuiteRequestOption.prototype = {
 };
 
 SuiteRequestOption.createForInternalApi = function(environment, rejectUnauthorized) {
-  return new SuiteRequestOption(environment, {
-    prefix: '/api/v2/internal',
-    rejectUnauthorized: rejectUnauthorized,
-    secure: true,
-    port: 443
-  });
+  return CreateSuiteRequestOption('/api/v2/internal', environment, rejectUnauthorized);
 };
 
 SuiteRequestOption.createForServiceApi = function (environment, rejectUnauthorized) {
-  return new SuiteRequestOption(environment, {
-    prefix: '/api/services',
-    rejectUnauthorized: rejectUnauthorized,
-    secure: true,
-    port: 443
-  });
+  return CreateSuiteRequestOption('/api/services', environment, rejectUnauthorized);
+};
+
+var CreateSuiteRequestOption = function (prefix, environment, rejectUnauthorized) {
+  var options = {};
+
+  if (typeof environment === 'object') {
+    options = environment;
+    environment = options.environment;
+  } else {
+    options.rejectUnauthorized = rejectUnauthorized;
+  }
+
+  options.prefix = prefix;
+
+  return new SuiteRequestOption(environment, options);
 };
 
 

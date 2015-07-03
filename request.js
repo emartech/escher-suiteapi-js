@@ -65,7 +65,7 @@ SuiteRequest.prototype = {
 
   _getOptionsFor: function(type, path) {
     var defaultOptions = _.cloneDeep(this._options.toHash());
-    var realPath =  defaultOptions.prefix + path;
+    var realPath = defaultOptions.prefix + path;
 
     return _.merge(defaultOptions, {
       method: type,
@@ -89,7 +89,7 @@ SuiteRequest.prototype = {
 SuiteRequest.EscherConstants = {
   algoPrefix: 'EMS',
   vendorKey: 'EMS',
-  credentialScope:'eu/suite/ems_request',
+  credentialScope: 'eu/suite/ems_request',
   authHeaderName: 'X-Ems-Auth',
   dateHeaderName: 'X-Ems-Date'
 };

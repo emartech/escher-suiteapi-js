@@ -5,7 +5,7 @@ var SuiteRequestOption = function(environment, options) {
   this.port = options.port || 443;
   this.host = environment;
   this.rejectUnauthorized = options.rejectUnauthorized !== false;
-  this.headers = [ ['content-type', 'application/json'] ];
+  this.headers = [['content-type', 'application/json']];
   this.prefix = '';
 
   if (!options) options = {};
@@ -52,11 +52,11 @@ SuiteRequestOption.createForInternalApi = function(environment, rejectUnauthoriz
   return CreateSuiteRequestOption('/api/v2/internal', environment, rejectUnauthorized);
 };
 
-SuiteRequestOption.createForServiceApi = function (environment, rejectUnauthorized) {
+SuiteRequestOption.createForServiceApi = function(environment, rejectUnauthorized) {
   return CreateSuiteRequestOption('/api/services', environment, rejectUnauthorized);
 };
 
-var CreateSuiteRequestOption = function (prefix, environment, rejectUnauthorized) {
+var CreateSuiteRequestOption = function(prefix, environment, rejectUnauthorized) {
   var options = {};
 
   if (typeof environment === 'object') {

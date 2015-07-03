@@ -25,7 +25,7 @@ RequestWrapper.prototype = {
 
   _sendRequest: function(resolve, reject) {
     var headers = {};
-    this.requestOptions.headers.forEach(function (header) {
+    this.requestOptions.headers.forEach(function(header) {
       headers[header[0]] = header[1];
     });
 
@@ -46,7 +46,7 @@ RequestWrapper.prototype = {
       reqOptions.body = this.payload;
     }
 
-    request[method](reqOptions, function (err, response) {
+    request[method](reqOptions, function(err, response) {
       if (err) {
         logger.error('fatal_error', err.message);
         return reject(new SuiteRequestError(err.message, 500));

@@ -2,9 +2,9 @@ var Wrapper = require('./wrapper');
 var expect = require('chai').expect;
 var request = require('request');
 
-describe('Wrapper', function () {
+describe('Wrapper', function() {
 
-  it('creates a new wrapper instance', function () {
+  it('creates a new wrapper instance', function() {
 
     var requestOptions = {
       data: 1
@@ -27,7 +27,7 @@ describe('Wrapper', function () {
 
   });
 
-  it('sends a GET new request', function (done) {
+  it('sends a GET new request', function(done) {
 
     var requestOptions = {
       port: 443,
@@ -44,7 +44,7 @@ describe('Wrapper', function () {
       body: 'data'
     };
 
-    this.sandbox.stub(request, 'get', function (options, callback) {
+    this.sandbox.stub(request, 'get', function(options, callback) {
       expect(options).to.be.eql({
         uri: {
           hostname: requestOptions.host,
@@ -65,7 +65,7 @@ describe('Wrapper', function () {
 
     var wrapper = new Wrapper(requestOptions, protocol);
 
-    wrapper.send().then(function (response) {
+    wrapper.send().then(function(response) {
       expect(response).to.be.eql(apiRespone);
       done();
     }).catch(done);

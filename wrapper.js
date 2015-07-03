@@ -35,7 +35,7 @@ RequestWrapper.prototype = {
       uri: {
         hostname: this.requestOptions.host,
         port: this.requestOptions.port,
-        protocol: this.protocol + ':',
+        protocol: this.protocol,
         pathname: this.requestOptions.path
       },
       headers: headers,

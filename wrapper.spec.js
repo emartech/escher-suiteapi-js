@@ -10,9 +10,7 @@ describe('Wrapper', function () {
       data: 1
     };
 
-    var protocol = {
-      request: function () {}
-    };
+    var protocol = 'http:';
 
     var payload = {
       data: 2
@@ -63,7 +61,7 @@ describe('Wrapper', function () {
       callback(null, apiRespone);
     });
 
-    var protocol = 'http';
+    var protocol = 'http:';
 
     var wrapper = new Wrapper(requestOptions, protocol);
 

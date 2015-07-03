@@ -1,6 +1,4 @@
 var Escher = require('escher-auth');
-var http = require('http');
-var https = require('https');
 var _ = require('lodash');
 var Options = require('./requestOption');
 var Wrapper = require('./wrapper');
@@ -60,7 +58,7 @@ SuiteRequest.prototype = {
 
 
   _getRequestFor: function(requestOptions, payload) {
-    var protocol = (this._options.secure) ? https : http;
+    var protocol = (this._options.secure) ? 'https:' : 'http:';
     return new Wrapper(requestOptions, protocol, payload);
   },
 

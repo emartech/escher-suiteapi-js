@@ -11,7 +11,8 @@ var logger = require('logentries-logformat')('suiterequest');
 var SuiteRequest = function(accessKeyId, apiSecret, requestOptions) {
   var escherConfig = _.extend(_.cloneDeep(SuiteRequest.EscherConstants), {
     accessKeyId: accessKeyId,
-    apiSecret: apiSecret
+    apiSecret: apiSecret,
+    credentialScope: requestOptions.credentialScope || SuiteRequest.EscherConstants.credentialScope
   });
 
   this._escher = new Escher(escherConfig);

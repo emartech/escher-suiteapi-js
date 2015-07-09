@@ -1,6 +1,6 @@
 {
   "name": "escher-suiteapi-js",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "Escher Suite Api js",
   "scripts": {
     "test": "NODE_ENV=test mocha $(find . -name \"*.spec.js\" -not -path \"./node_modules/*\")",

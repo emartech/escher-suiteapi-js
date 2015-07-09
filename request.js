@@ -1,6 +1,4 @@
 var Escher = require('escher-auth');
-var http = require('http');
-var https = require('https');
 var _ = require('lodash');
 var Options = require('./requestOption');
 var Wrapper = require('./wrapper');
@@ -61,14 +59,14 @@ SuiteRequest.prototype = {
 
 
   _getRequestFor: function(requestOptions, payload) {
-    var protocol = (this._options.secure) ? https : http;
+    var protocol = (this._options.secure) ? 'https:' : 'http:';
     return new Wrapper(requestOptions, protocol, payload);
   },
 
 
   _getOptionsFor: function(type, path) {
     var defaultOptions = _.cloneDeep(this._options.toHash());
-    var realPath =  defaultOptions.prefix + path;
+    var realPath = defaultOptions.prefix + path;
 
     return _.merge(defaultOptions, {
       method: type,
@@ -92,7 +90,7 @@ SuiteRequest.prototype = {
 SuiteRequest.EscherConstants = {
   algoPrefix: 'EMS',
   vendorKey: 'EMS',
-  credentialScope:'eu/suite/ems_request',
+  credentialScope: 'eu/suite/ems_request',
   authHeaderName: 'X-Ems-Auth',
   dateHeaderName: 'X-Ems-Date'
 };

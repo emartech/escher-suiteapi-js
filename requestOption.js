@@ -56,12 +56,11 @@ SuiteRequestOption.createForServiceApi = function(environment, rejectUnauthorize
   return CreateSuiteRequestOption('/api/services', environment, rejectUnauthorized);
 };
 
-var CreateSuiteRequestOption = function(prefix, environment, rejectUnauthorized) {
 SuiteRequestOption.create = function(environment, prefix, rejectUnauthorized) {
   return CreateSuiteRequestOption(prefix, environment, rejectUnauthorized);
 };
 
-var CreateSuiteRequestOption = function (prefix, environment, rejectUnauthorized) {
+var CreateSuiteRequestOption = function(prefix, environment, rejectUnauthorized) {
   var options = {};
 
   if (typeof environment === 'object') {

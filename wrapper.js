@@ -2,6 +2,7 @@ var Promise = require('bluebird');
 var SuiteRequestError = require('./requestError');
 var logger = require('logentries-logformat')('suiterequest');
 var _ = require('lodash');
+var request = require('request');
 
 
 var TIMEOUT_DELAY = 15000;
@@ -23,48 +24,51 @@ RequestWrapper.prototype = {
 
 
   _sendRequest: function(resolve, reject) {
-    var req = this.protocol.request(this.requestOptions, function(resp) {
-      var responseChunks = [];
+    var headers = {};
+    this.requestOptions.headers.forEach(function(header) {
+      headers[header[0]] = header[1];
+    });
 
-      resp.on('data', function(chunk) { responseChunks.push(chunk); });
+    var method = this.requestOptions.method.toLowerCase();
 
-      resp.on('end', function() {
-        if (!responseChunks.length) {
-          logger.error('server_error', 'empty response data');
-          return reject(new SuiteRequestError('Error in http response', 500, {}));
-        }
+    var reqOptions = {
+      uri: {
+        hostname: this.requestOptions.host,
+        port: this.requestOptions.port,
+        protocol: this.protocol,
+        pathname: this.requestOptions.path
+      },
+      headers: headers,
+      timeout: TIMEOUT_DELAY
+    };
 
-        var data = JSON.parse(responseChunks.join(''));
-        if (resp.statusCode >= 400) {
-          logger.error('server_error', data.replyText, { code: resp.statusCode });
-          return reject(new SuiteRequestError('Error in http response', resp.statusCode, data));
-        }
+    if (this.payload) {
+      reqOptions.body = this.payload;
+    }
 
-        logger.success('send', this._getLogParameters());
-        return resolve({
-          statusCode: resp.statusCode,
-          data: data
+    request[method](reqOptions, function(err, response) {
+      if (err) {
+        logger.error('fatal_error', err.message);
+        return reject(new SuiteRequestError(err.message, 500));
+      }
+
+      if (!response.body) {
+        logger.error('server_error', 'empty response data');
+        return reject(new SuiteRequestError('Error in http response', 500, {}));
+      }
+
+      if (response.statusCode >= 400) {
+        logger.error('server_error', response.body.data.replyText, {
+          code: response.statusCode
         });
-      }.bind(this));
+        return reject(new SuiteRequestError('Error in http response', response.statusCode, response.body));
+      }
 
+      logger.success('send', this._getLogParameters());
+
+      return resolve(response);
     }.bind(this));
 
-    req.on('error', function(e) {
-      logger.error('fatal_error', e.message);
-      reject(new SuiteRequestError(e.message, 500));
-    });
-
-    req.on('socket', function(socket) {
-      socket.setTimeout(TIMEOUT_DELAY);
-
-      socket.on('timeout', function() {
-        logger.error('timeout', 'server timed out');
-        req.abort();
-      });
-    });
-
-    if (this.payload) req.write(this.payload);
-    req.end();
   },
 
 

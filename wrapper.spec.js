@@ -41,6 +41,9 @@ describe('Wrapper', function() {
     };
 
     var apiRespone = {
+      headers: {
+        'content-type': 'application/json'
+      },
       body: JSON.stringify({
         data: 1
       })
@@ -88,6 +91,9 @@ describe('Wrapper', function() {
     };
 
     var apiRespone = {
+      headers: {
+        'content-type': 'application/json'
+      },
       body: JSON.stringify({
         replyText: 'Unknown route'
       }),

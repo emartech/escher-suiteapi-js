@@ -72,4 +72,63 @@ describe('Wrapper', function() {
 
   });
 
+  it('sends a GET new request and recieves 400', function(done) {
+
+    var requestOptions = {
+      port: 443,
+      host: 'very.host.io',
+      headers: [
+        ['content-type', 'very-format'],
+        ['x-custom', 'alma']
+      ],
+      method: 'GET',
+      path: '/purchases/1/content'
+    };
+
+    var apiRespone = {
+      body: {
+        replyText: 'Unknown route'
+      },
+      statusCode: 400
+    };
+
+    this.sandbox.stub(request, 'get', function(options, callback) {
+      expect(options).to.be.eql({
+        uri: {
+          hostname: requestOptions.host,
+          port: requestOptions.port,
+          protocol: 'http:',
+          pathname: requestOptions.path
+        },
+        headers: {
+          'content-type': 'very-format',
+          'x-custom': 'alma'
+        },
+        timeout: 15000
+      });
+      callback(null, apiRespone);
+    });
+
+    var protocol = 'http:';
+
+    var wrapper = new Wrapper(requestOptions, protocol);
+
+    wrapper.send().then(function() {
+      throw new Error('Error should have beeen thrown');
+    }).catch(function(err) {
+      expect(err).to.be.eql({
+        message: 'Error in http response',
+        name: 'SuiteRequestError',
+        code: 400,
+        data: {
+          replyText: 'Error in http response'
+        },
+        replyText: 'Unknown route'
+      });
+      done();
+    });
+
+  });
+
+
 });

@@ -58,7 +58,7 @@ RequestWrapper.prototype = {
       }
 
       if (response.statusCode >= 400) {
-        logger.error('server_error', response.body.data.replyText, {
+        logger.error('server_error', response.body.replyText, {
           code: response.statusCode
         });
         return reject(new SuiteRequestError('Error in http response', response.statusCode, response.body));

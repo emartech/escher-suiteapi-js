@@ -41,7 +41,12 @@ describe('Wrapper', function() {
     };
 
     var apiRespone = {
-      body: 'data'
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        data: 1
+      })
     };
 
     this.sandbox.stub(request, 'get', function(options, callback) {
@@ -86,9 +91,12 @@ describe('Wrapper', function() {
     };
 
     var apiRespone = {
-      body: {
-        replyText: 'Unknown route'
+      headers: {
+        'content-type': 'application/json'
       },
+      body: JSON.stringify({
+        replyText: 'Unknown route'
+      }),
       statusCode: 400
     };
 

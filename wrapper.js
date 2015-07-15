@@ -1,6 +1,7 @@
 var Promise = require('bluebird');
 var SuiteRequestError = require('./requestError');
 var logger = require('logentries-logformat')('suiterequest');
+var debugLogger = require('logentries-logformat')('suiterequest-debug');
 var _ = require('lodash');
 var request = require('request');
 
@@ -12,6 +13,9 @@ var RequestWrapper = function(requestOptions, protocol, payload) {
   this.requestOptions = requestOptions;
   this.protocol = protocol;
   this.payload = payload;
+  debugLogger.log('request_options', requestOptions);
+  debugLogger.log('protocol', protocol);
+  debugLogger.log('payload', payload);
 };
 
 RequestWrapper.prototype = {
@@ -41,6 +45,7 @@ RequestWrapper.prototype = {
       headers: headers,
       timeout: TIMEOUT_DELAY
     };
+    debugLogger.log('wrapper_options', reqOptions);
 
     if (this.payload) {
       reqOptions.body = this.payload;

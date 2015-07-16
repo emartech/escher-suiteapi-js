@@ -1,8 +1,6 @@
-Escher Suite Api js
-==================
+# Escher Suite Api js
 
-Usage
----------
+## Usage
 
     var suiteRequest = new SuiteRequest('example.environment', 'auth.name', 'auth.secret');
     
@@ -16,3 +14,7 @@ Usage
     }).then(function(response) {
       console.log(response);
     });
+
+## ENV options
+
+* `ESCHER_IS_SECURE` when set to 'false', then the protocol is `http` instead of `https`

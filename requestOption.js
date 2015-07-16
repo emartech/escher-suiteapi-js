@@ -1,7 +1,7 @@
 var _ = require('lodash');
 
 var SuiteRequestOption = function(environment, options) {
-  this.secure = options.secure !== false;
+  this.secure = process.env.ESCHER_IS_SECURE !== 'false';
   this.port = options.port || 443;
   this.host = environment;
   this.rejectUnauthorized = options.rejectUnauthorized !== false;

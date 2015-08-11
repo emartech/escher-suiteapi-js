@@ -4,7 +4,7 @@ var logger = require('logentries-logformat')('suiterequest');
 var debugLogger = require('logentries-logformat')('suiterequest-debug');
 var _ = require('lodash');
 var request = require('request');
-
+var Timer = require('timer-machine');
 
 var TIMEOUT_DELAY = 15000;
 
@@ -29,6 +29,8 @@ RequestWrapper.prototype = {
 
   _sendRequest: function(resolve, reject) {
     var headers = {};
+    var timer = new Timer();
+    timer.start();
     this.requestOptions.headers.forEach(function(header) {
       headers[header[0]] = header[1];
     });
@@ -78,7 +80,8 @@ RequestWrapper.prototype = {
         return reject(new SuiteRequestError('Error in http response', response.statusCode, response.body));
       }
 
-      logger.success('send', this._getLogParameters());
+      timer.stop();
+      logger.success('send', this._getLogParameters({ time: timer.time() }));
 
       return resolve(response);
     }.bind(this));
@@ -86,8 +89,9 @@ RequestWrapper.prototype = {
   },
 
 
-  _getLogParameters: function() {
-    return _.pick(this.requestOptions, ['method', 'host', 'url']);
+  _getLogParameters: function(extraParametersToLog) {
+    var requestParametersToLog = _.pick(this.requestOptions, ['method', 'host', 'url']);
+    return _.extend({}, requestParametersToLog, extraParametersToLog);
   }
 
 };

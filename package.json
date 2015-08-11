@@ -28,7 +28,8 @@
     "escher-auth": "0.2.4",
     "lodash": "3.10.1",
     "logentries-logformat": "git://github.com/emartech/logentries-logformat.git",
-    "request": "2.60.0"
+    "request": "2.60.0",
+    "timer-machine": "1.0.1"
   },
   "devDependencies": {
     "chai": "^3.0.0",

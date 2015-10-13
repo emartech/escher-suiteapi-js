@@ -24,11 +24,11 @@
   },
   "homepage": "https://github.com/emartech/escher-suiteapi-js",
   "dependencies": {
-    "bluebird": "2.9.34",
+    "bluebird": "2.10.2",
     "escher-auth": "0.2.4",
     "lodash": "3.10.1",
-    "logentries-logformat": "0.1.2",
-    "request": "2.60.0",
+    "logentries-logformat": "0.1.4",
+    "request": "2.65.0",
     "timer-machine": "1.0.1"
   },
   "devDependencies": {

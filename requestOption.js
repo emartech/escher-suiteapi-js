@@ -5,7 +5,7 @@ var SuiteRequestOption = function(environment, options) {
   this.port = options.port || 443;
   this.host = environment;
   this.rejectUnauthorized = options.rejectUnauthorized !== false;
-  this.headers = [['content-type', 'application/json']];
+  this.headers = [['content-type', 'application/json'], ['host', environment]];
   this.prefix = '';
 
   if (!options) options = {};

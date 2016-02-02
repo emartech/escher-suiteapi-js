@@ -1,3 +1,5 @@
+'use strict';
+
 var Promise = require('bluebird');
 var SuiteRequestError = require('./requestError');
 var logger = require('logentries-logformat')('suiterequest');

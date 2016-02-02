@@ -1,3 +1,5 @@
+'use strict';
+
 var Escher = require('escher-auth');
 var _ = require('lodash');
 var Options = require('./requestOption');

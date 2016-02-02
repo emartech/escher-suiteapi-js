@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('lodash');
 
 var SuiteRequestOption = function(environment, options) {
@@ -8,7 +10,9 @@ var SuiteRequestOption = function(environment, options) {
   this.headers = [['content-type', 'application/json'], ['host', environment]];
   this.prefix = '';
 
-  if (!options) options = {};
+  if (!options) {
+    options = {};
+  }
   _.extend(this, options);
 };
 
@@ -41,7 +45,9 @@ SuiteRequestOption.prototype = {
       prefix: this.prefix
     };
 
-    if (!this.rejectUnauthorized) hash.rejectUnauthorized = false;
+    if (!this.rejectUnauthorized) {
+      hash.rejectUnauthorized = false;
+    }
 
     return hash;
   }
@@ -49,18 +55,18 @@ SuiteRequestOption.prototype = {
 };
 
 SuiteRequestOption.createForInternalApi = function(environment, rejectUnauthorized) {
-  return CreateSuiteRequestOption('/api/v2/internal', environment, rejectUnauthorized);
+  return createSuiteRequestOption('/api/v2/internal', environment, rejectUnauthorized);
 };
 
 SuiteRequestOption.createForServiceApi = function(environment, rejectUnauthorized) {
-  return CreateSuiteRequestOption('/api/services', environment, rejectUnauthorized);
+  return createSuiteRequestOption('/api/services', environment, rejectUnauthorized);
 };
 
 SuiteRequestOption.create = function(environment, prefix, rejectUnauthorized) {
-  return CreateSuiteRequestOption(prefix, environment, rejectUnauthorized);
+  return createSuiteRequestOption(prefix, environment, rejectUnauthorized);
 };
 
-var CreateSuiteRequestOption = function(prefix, environment, rejectUnauthorized) {
+var createSuiteRequestOption = function(prefix, environment, rejectUnauthorized) {
   var options = {};
 
   if (typeof environment === 'object') {

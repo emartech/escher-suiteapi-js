@@ -31,7 +31,7 @@ describe('Wrapper', function() {
     timeout: 15000
   };
 
-  it('sends a GET new request', function(done) {
+  it('sends a GET new request', function *() {
     var apiRespone = {
       headers: {
         'content-type': 'application/json'
@@ -49,14 +49,12 @@ describe('Wrapper', function() {
 
     var wrapper = new Wrapper(escherRequestOptions, protocol);
 
-    wrapper.send().then(function(response) {
-      expect(response).to.be.eql(apiRespone);
-      expect(requestGetStub).to.be.calledWith(requestOptions);
-      done();
-    }).catch(done);
+    var response = yield wrapper.send();
+    expect(response).to.be.eql(apiRespone);
+    expect(requestGetStub).to.be.calledWith(requestOptions);
   });
 
-  it('sends a GET new request and recieves 400', function(done) {
+  it('sends a GET new request and recieves 400', function *() {
     var apiRespone = {
       headers: {
         'content-type': 'application/json'
@@ -75,9 +73,9 @@ describe('Wrapper', function() {
 
     var wrapper = new Wrapper(escherRequestOptions, protocol);
 
-    wrapper.send().then(function() {
-      throw new Error('Error should have beeen thrown');
-    }).catch(function(err) {
+    try {
+      yield wrapper.send();
+    } catch (err) {
       expect(err).to.be.eql({
         message: 'Error in http response',
         name: 'SuiteRequestError',
@@ -88,7 +86,9 @@ describe('Wrapper', function() {
         replyText: 'Unknown route'
       });
       expect(requestGetStub).to.be.calledWith(requestOptions);
-      done();
-    });
+      return;
+    }
+
+    throw new Error('Error should have been thrown');
   });
 });

@@ -79,7 +79,11 @@ SuiteRequest.prototype = {
 
 
   _signRequest: function(options, payload) {
-    return this._escher.signRequest(options, payload);
+    var headerNames = options.headers.map(function(header) {
+      return header[0];
+    });
+
+    return this._escher.signRequest(options, payload, headerNames);
   },
 
 

@@ -37,6 +37,10 @@ SuiteRequestOption.prototype = {
     this.port = port;
   },
 
+  addHeader: function(header) {
+    this.headers = this.headers.concat([header]);
+  },
+
   toHash: function() {
     var hash = {
       port: this.port,

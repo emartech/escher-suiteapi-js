@@ -1,7 +1,6 @@
 'use strict';
 
 var Wrapper = require('./wrapper');
-var expect = require('chai').expect;
 var request = require('request');
 
 describe('Wrapper', function() {

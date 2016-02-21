@@ -1,7 +1,6 @@
 'use strict';
 
 var SuiteRequestOption = require('./requestOption');
-var expect = require('chai').expect;
 
 describe('SuiteRequestOption', function() {
 
@@ -23,4 +22,16 @@ describe('SuiteRequestOption', function() {
     expect(requestOptions.toHash().headers).to.include(dummyHeader);
   });
 
+  it('should not duplicate headers with same name', function() {
+    var expectedContentTypeHeader = ['content-type', 'text/csv'];
+    var requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+
+    requestOptions.addHeader(expectedContentTypeHeader);
+
+    var contentTypeHeader = requestOptions.toHash().headers.filter(function(header) {
+      return header[0] === 'content-type';
+    });
+
+    expect(contentTypeHeader).to.eql([expectedContentTypeHeader]);
+  });
 });

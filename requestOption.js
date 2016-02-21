@@ -38,7 +38,18 @@ SuiteRequestOption.prototype = {
   },
 
   addHeader: function(header) {
-    this.headers = this.headers.concat([header]);
+    var exists = false;
+
+    this.headers.forEach(function(addedHeader) {
+      if (addedHeader[0] === header[0]) {
+        addedHeader[1] = header[1];
+        exists = true;
+      }
+    });
+
+    if (!exists) {
+      this.headers.push(header);
+    }
   },
 
   toHash: function() {

@@ -8,6 +8,8 @@ before(function() {
   var chaiSubset = require('chai-subset');
   var chaiAsPromised = require('chai-as-promised');
 
+  global.expect = chai.expect;
+
   chai.use(chaiAsPromised);
   chai.use(chaiSubset);
   chai.use(sinonChai);

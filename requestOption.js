@@ -37,8 +37,21 @@ SuiteRequestOption.prototype = {
     this.port = port;
   },
 
-  addHeader: function(header) {
-    this.headers = this.headers.concat([header]);
+  setHeader: function(header) {
+    var existingHeader = this._findExistingHeader(header[0]);
+    if (existingHeader) {
+      existingHeader[1] = header[1];
+    } else {
+      this.headers.push(header);
+    }
+  },
+
+  _findExistingHeader: function(key) {
+    var headers = _.filter(this.headers, function(header) {
+      return header[0] === key;
+    });
+
+    return (headers ? headers[0] : null);
   },
 
   toHash: function() {

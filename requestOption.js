@@ -38,28 +38,20 @@ SuiteRequestOption.prototype = {
   },
 
   setHeader: function(header) {
-    var key = header[0];
-    var value = header[1];
-
-    var index = this._headerIndexOf(key);
-    if (index === -1) {
-      this.headers.push(header);
+    var existingHeader = this._findExistingHeader(header[0]);
+    if (existingHeader) {
+      existingHeader[1] = header[1];
     } else {
-      this.headers[index][1] = value;
+      this.headers.push(header);
     }
   },
 
-  _headerIndexOf: function(key) {
-    var index = -1;
+  _findExistingHeader: function(key) {
+    var headers = _.filter(this.headers, function(header) {
+      return header[0] === key;
+    });
 
-    for (var i = 0; i < this.headers.length; i++) {
-      if (this.headers[i][0] === key) {
-        index = i;
-        break;
-      }
-    }
-
-    return index;
+    return (headers ? headers[0] : null);
   },
 
   toHash: function() {

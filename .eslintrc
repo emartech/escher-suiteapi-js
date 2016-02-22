@@ -7,6 +7,9 @@
   "globals": {
     "expect": true
   },
+  "rules": {
+    "security/detect-object-injection": 0
+  },
   "extends": [
     "emarsys"
   ]

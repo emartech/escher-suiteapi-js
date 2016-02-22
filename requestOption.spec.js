@@ -17,7 +17,7 @@ describe('SuiteRequestOption', function() {
     var dummyHeader = ['header-name', 'header-value'];
     var requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
-    requestOptions.addHeader(dummyHeader);
+    requestOptions.setHeader(dummyHeader);
 
     expect(requestOptions.toHash().headers).to.include(dummyHeader);
   });
@@ -26,7 +26,7 @@ describe('SuiteRequestOption', function() {
     var expectedContentTypeHeader = ['content-type', 'text/csv'];
     var requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
-    requestOptions.addHeader(expectedContentTypeHeader);
+    requestOptions.setHeader(expectedContentTypeHeader);
 
     var contentTypeHeader = requestOptions.toHash().headers.filter(function(header) {
       return header[0] === 'content-type';

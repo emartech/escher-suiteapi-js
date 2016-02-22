@@ -52,7 +52,7 @@ describe('SuiteRequest', function() {
 
   it('should sign headers with non string values', function() {
     var suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);
-    requestOptions.addHeader(['x-customer-id', 15]);
+    requestOptions.setHeader(['x-customer-id', 15]);
 
     this.sandbox.stub(request, 'post', function(options, callback) {
       expect(options.headers['x-ems-auth'])
@@ -64,7 +64,7 @@ describe('SuiteRequest', function() {
   });
 
   it('signs extra headers too', function() {
-    requestOptions.addHeader(['extra-header', 'header-value']);
+    requestOptions.setHeader(['extra-header', 'header-value']);
     var suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);
 
     this.sandbox.stub(request, 'get', function(options, callback) {

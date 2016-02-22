@@ -37,19 +37,29 @@ SuiteRequestOption.prototype = {
     this.port = port;
   },
 
-  addHeader: function(header) {
-    var exists = false;
+  setHeader: function(header) {
+    var key = header[0];
+    var value = header[1];
 
-    this.headers.forEach(function(addedHeader) {
-      if (addedHeader[0] === header[0]) {
-        addedHeader[1] = header[1];
-        exists = true;
-      }
-    });
-
-    if (!exists) {
+    var index = this._headerIndexOf(key);
+    if (index === -1) {
       this.headers.push(header);
+    } else {
+      this.headers[index][1] = value;
     }
+  },
+
+  _headerIndexOf: function(key) {
+    var index = -1;
+
+    for (var i = 0; i < this.headers.length; i++) {
+      if (this.headers[i][0] === key) {
+        index = i;
+        break;
+      }
+    }
+
+    return index;
   },
 
   toHash: function() {

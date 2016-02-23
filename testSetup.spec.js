@@ -5,13 +5,9 @@ var sinon = require('sinon');
 before(function() {
   var chai = require('chai');
   var sinonChai = require('sinon-chai');
-  var chaiSubset = require('chai-subset');
-  var chaiAsPromised = require('chai-as-promised');
 
   global.expect = chai.expect;
 
-  chai.use(chaiAsPromised);
-  chai.use(chaiSubset);
   chai.use(sinonChai);
 
   sinon.stub.returnsWithResolve = function(data) {

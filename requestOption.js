@@ -39,7 +39,7 @@ SuiteRequestOption.prototype = {
 
   setHeader: function(headerToSet) {
     this.headers = this.headers
-      .filter(this._differentKey(headerToSet[0]))
+      .filter(this._headersExcept(headerToSet[0]))
       .concat([headerToSet]);
   },
 
@@ -58,7 +58,7 @@ SuiteRequestOption.prototype = {
     return hash;
   },
 
-  _differentKey: function(headerKeyToSkip) {
+  _headersExcept: function(headerKeyToSkip) {
     return function(existingHeader) {
       return existingHeader[0] !== headerKeyToSkip;
     };

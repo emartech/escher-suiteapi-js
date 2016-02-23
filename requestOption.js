@@ -37,21 +37,10 @@ SuiteRequestOption.prototype = {
     this.port = port;
   },
 
-  setHeader: function(header) {
-    var existingHeader = this._findExistingHeader(header[0]);
-    if (existingHeader) {
-      existingHeader[1] = header[1];
-    } else {
-      this.headers.push(header);
-    }
-  },
-
-  _findExistingHeader: function(key) {
-    var headers = _.filter(this.headers, function(header) {
-      return header[0] === key;
-    });
-
-    return (headers ? headers[0] : null);
+  setHeader: function(headerToSet) {
+    this.headers = this.headers
+      .filter(this._headersExcept(headerToSet[0]))
+      .concat([headerToSet]);
   },
 
   toHash: function() {
@@ -67,6 +56,12 @@ SuiteRequestOption.prototype = {
     }
 
     return hash;
+  },
+
+  _headersExcept: function(headerKeyToSkip) {
+    return function(existingHeader) {
+      return existingHeader[0] !== headerKeyToSkip;
+    };
   }
 
 };

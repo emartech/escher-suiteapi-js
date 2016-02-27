@@ -63,6 +63,36 @@ describe('SuiteRequest', function() {
     suiteRequest.post('/path', { name: 'Almanach' });
   });
 
+  it('should encode payload when content type is json', function() {
+    var suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);
+    this.sandbox.stub(request, 'post', function(options, callback) {
+      try {
+        expect(options.body).to.eql('{"name":"Almanach"}');
+        callback(null, createDummyResponse());
+      } catch (e) {
+        callback(e, createDummyResponse());
+      }
+    });
+
+    return suiteRequest.post('/path', { name: 'Almanach' });
+  });
+
+  it('should skip encoding of payload when content type is not json', function() {
+    var suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);
+    requestOptions.setHeader(['content-type', 'text/csv']);
+
+    this.sandbox.stub(request, 'post', function(options, callback) {
+      try {
+        expect(options.body).to.eql('header1;header2');
+        callback(null, createDummyResponse());
+      } catch (e) {
+        callback(e, createDummyResponse());
+      }
+    });
+
+    return suiteRequest.post('/path', 'header1;header2');
+  });
+
   it('signs extra headers too', function() {
     requestOptions.setHeader(['extra-header', 'header-value']);
     var suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);

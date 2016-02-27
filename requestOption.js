@@ -43,6 +43,13 @@ SuiteRequestOption.prototype = {
       .concat([headerToSet]);
   },
 
+  getHeader: function(name) {
+    var result = this.headers
+      .filter(this._exactHeader(name));
+
+    return result.length ? result[0][1] : null;
+  },
+
   toHash: function() {
     var hash = {
       port: this.port,
@@ -62,8 +69,13 @@ SuiteRequestOption.prototype = {
     return function(existingHeader) {
       return existingHeader[0] !== headerKeyToSkip;
     };
-  }
+  },
 
+  _exactHeader: function(name) {
+    return function(existingHeader) {
+      return existingHeader[0].toLowerCase() === name.toLowerCase();
+    };
+  }
 };
 
 SuiteRequestOption.createForInternalApi = function(environment, rejectUnauthorized) {

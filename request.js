@@ -92,7 +92,7 @@ SuiteRequest.prototype = {
   },
 
   _getPayload: function(data) {
-    if (this._options.getHeader('content-type') !== 'application/json') {
+    if (this._options.getHeader('content-type').indexOf('application/json') === -1) {
       return data;
     }
 

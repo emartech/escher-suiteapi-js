@@ -77,6 +77,22 @@ describe('SuiteRequest', function() {
     return suiteRequest.post('/path', { name: 'Almanach' });
   });
 
+  it('should encode payload when content type is utf8 json', function() {
+    var suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);
+    requestOptions.setHeader(['content-type', 'application/json;charset=utf-8']);
+
+    this.sandbox.stub(request, 'post', function(options, callback) {
+      try {
+        expect(options.body).to.eql('{"name":"Almanach"}');
+        callback(null, createDummyResponse());
+      } catch (e) {
+        callback(e, createDummyResponse());
+      }
+    });
+
+    return suiteRequest.post('/path', { name: 'Almanach' });
+  });
+
   it('should skip encoding of payload when content type is not json', function() {
     var suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);
     requestOptions.setHeader(['content-type', 'text/csv']);

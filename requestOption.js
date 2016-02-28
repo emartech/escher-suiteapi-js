@@ -44,10 +44,11 @@ SuiteRequestOption.prototype = {
   },
 
   getHeader: function(name) {
-    var result = this.headers
-      .filter(this._exactHeader(name));
+    var result = _.find(this.headers, function(header) {
+      return header[0].toLowerCase() === name.toLowerCase();
+    });
 
-    return result.length ? result[0][1] : null;
+    return result ? result[1] : null;
   },
 
   toHash: function() {
@@ -68,12 +69,6 @@ SuiteRequestOption.prototype = {
   _headersExcept: function(headerKeyToSkip) {
     return function(existingHeader) {
       return existingHeader[0] !== headerKeyToSkip;
-    };
-  },
-
-  _exactHeader: function(name) {
-    return function(existingHeader) {
-      return existingHeader[0].toLowerCase() === name.toLowerCase();
     };
   }
 };

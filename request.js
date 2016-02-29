@@ -32,7 +32,7 @@ SuiteRequest.prototype = {
 
   post: function(path, data) {
     var options = this._getOptionsFor('POST', path);
-    var payload = JSON.stringify(data);
+    var payload = this._getPayload(data);
     var signedOptions = this._signRequest(options, payload);
 
     logger.log('send', this._getLogParameters(options));
@@ -42,7 +42,7 @@ SuiteRequest.prototype = {
 
   put: function(path, data) {
     var options = this._getOptionsFor('PUT', path);
-    var payload = JSON.stringify(data);
+    var payload = this._getPayload(data);
     var signedOptions = this._signRequest(options, payload);
 
     logger.log('send', this._getLogParameters(options));
@@ -89,8 +89,15 @@ SuiteRequest.prototype = {
 
   _getLogParameters: function(options) {
     return _.pick(options, ['method', 'host', 'url']);
-  }
+  },
 
+  _getPayload: function(data) {
+    if (this._options.getHeader('content-type').indexOf('application/json') === -1) {
+      return data;
+    }
+
+    return JSON.stringify(data);
+  }
 };
 
 SuiteRequest.EscherConstants = {

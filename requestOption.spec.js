@@ -19,17 +19,13 @@ describe('SuiteRequestOption', function() {
 
     requestOptions.setHeader(dummyHeader);
 
-    expect(requestOptions.toHash().headers).to.include(dummyHeader);
+    expect(requestOptions.getHeader('header-name')).to.eql('header-value');
   });
 
   it('should add default content type', function() {
     var requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
-    var contentTypeHeader = requestOptions.toHash().headers.filter(function(header) {
-      return header[0] === 'content-type';
-    });
-
-    expect(contentTypeHeader).to.eql([['content-type', 'application/json']]);
+    expect(requestOptions.getHeader('content-type')).to.eql('application/json');
   });
 
   it('should not duplicate headers with same name', function() {
@@ -38,10 +34,6 @@ describe('SuiteRequestOption', function() {
 
     requestOptions.setHeader(expectedContentTypeHeader);
 
-    var contentTypeHeader = requestOptions.toHash().headers.filter(function(header) {
-      return header[0] === 'content-type';
-    });
-
-    expect(contentTypeHeader).to.eql([expectedContentTypeHeader]);
+    expect(requestOptions.getHeader('content-type')).to.eql('text/csv');
   });
 });

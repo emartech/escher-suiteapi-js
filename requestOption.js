@@ -43,6 +43,14 @@ SuiteRequestOption.prototype = {
       .concat([headerToSet]);
   },
 
+  getHeader: function(name) {
+    var result = _.find(this.headers, function(header) {
+      return header[0].toLowerCase() === name.toLowerCase();
+    });
+
+    return result ? result[1] : null;
+  },
+
   toHash: function() {
     var hash = {
       port: this.port,
@@ -63,7 +71,6 @@ SuiteRequestOption.prototype = {
       return existingHeader[0] !== headerKeyToSkip;
     };
   }
-
 };
 
 SuiteRequestOption.createForInternalApi = function(environment, rejectUnauthorized) {

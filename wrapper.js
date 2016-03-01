@@ -63,7 +63,7 @@ RequestWrapper.prototype = {
 
       if (!response.body) {
         logger.error('server_error', 'empty response data');
-        return reject(new SuiteRequestError('Error in http response', 500, {}));
+        return reject(new SuiteRequestError('Empty http response', 500, {}));
       }
 
       if (response.headers['content-type'] === 'application/json') {
@@ -79,7 +79,7 @@ RequestWrapper.prototype = {
         logger.error('server_error', response.body.replyText, {
           code: response.statusCode
         });
-        return reject(new SuiteRequestError('Error in http response', response.statusCode, response.body));
+        return reject(new SuiteRequestError('Error in http response (status: ' + response.statusCode + ')', response.statusCode, response.body));
       }
 
       timer.stop();

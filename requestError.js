@@ -9,10 +9,11 @@ var SuiteRequestError = function(message, code, data) {
   this.data = {
     replyText: message
   };
+  this.stack = new Error().stack;
 
   _.extend(this, data);
 };
 
-SuiteRequestError.prototype = new Error();
+SuiteRequestError.prototype = Object.create(Error.prototype);
 
 module.exports = SuiteRequestError;

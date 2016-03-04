@@ -72,15 +72,8 @@ describe('Wrapper', function() {
       throw new Error('Error should have been thrown');
     } catch (err) {
       expect(err).to.be.an.instanceof(SuiteRequestError);
-      expect(err).to.be.eql({
-        message: 'Error in http response (status: 400)',
-        name: 'SuiteRequestError',
-        code: 400,
-        data: {
-          replyText: 'Error in http response (status: 400)'
-        },
-        replyText: 'Unknown route'
-      });
+      expect(err.message).to.eql('Error in http response (status: 400)');
+      expect(err.code).to.eql(400);
       expect(requestGetStub).to.be.calledWith(requestOptions);
     }
   });
@@ -99,14 +92,8 @@ describe('Wrapper', function() {
       throw new Error('Error should have been thrown');
     } catch (err) {
       expect(err).to.be.an.instanceof(SuiteRequestError);
-      expect(err).to.be.eql({
-        message: 'Empty http response',
-        name: 'SuiteRequestError',
-        code: 500,
-        data: {
-          replyText: 'Empty http response'
-        }
-      });
+      expect(err.message).to.eql('Empty http response');
+      expect(err.code).to.eql(500);
       expect(requestGetStub).to.be.calledWith(requestOptions);
     }
   });

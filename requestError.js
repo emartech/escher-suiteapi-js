@@ -5,7 +5,7 @@ var SuiteRequestError = function(message, code, data) {
   this.name = 'SuiteRequestError';
   this.code = code;
   this.data = data;
-  this.stack = new Error().stack;
+  this.stack = new Error(message).stack;
 };
 
 SuiteRequestError.prototype = Object.create(Error.prototype);

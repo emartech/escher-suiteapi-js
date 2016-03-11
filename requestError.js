@@ -6,7 +6,7 @@ var SuiteRequestError = function(message, code, response) {
   this.name = 'SuiteRequestError';
   this.code = code;
   if (response) {
-    this.data = _.cloneDeep(response.data|| response);
+    this.data = _.cloneDeep(response.data || response);
   } else {
     this.data = {
       replyText: message

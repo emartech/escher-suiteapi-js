@@ -17,7 +17,7 @@ describe('SuiteRequestError', function() {
     expect(error.data).to.eql({ detailedMessage: 'Line too long' });
   });
 
-  it('should always contain replyText in data', function() {
+  it('should always contain data on error', function() {
     var error = new SuiteRequestError('Unauthorized');
 
     expect(error.data).to.eql({ });

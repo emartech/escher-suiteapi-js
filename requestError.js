@@ -1,13 +1,18 @@
 'use strict';
+var _ = require('lodash');
 
-var SuiteRequestError = function(message, code, data) {
+var SuiteRequestError = function(message, code, response) {
   this.message = message;
   this.name = 'SuiteRequestError';
   this.code = code;
-  this.data = data || {};
-  if (!this.data.replyText) {
-    this.data.replyText = message;
+  if (response) {
+    this.data = _.cloneDeep(response.data || response);
+  } else {
+    this.data = {
+      replyText: message
+    };
   }
+
   this.stack = new Error(message).stack;
 };
 

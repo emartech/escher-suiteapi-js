@@ -14,12 +14,12 @@ describe('SuiteRequestError', function() {
 
     expect(error.message).to.eql('Invalid request');
     expect(error.code).to.eql(400);
-    expect(error.data).to.eql({ detailedMessage: 'Line too long', replyText: 'Invalid request' });
+    expect(error.data).to.eql({ detailedMessage: 'Line too long' });
   });
 
   it('should always contain replyText in data', function() {
     var error = new SuiteRequestError('Unauthorized');
 
-    expect(error.data.replyText).to.eql('Unauthorized');
+    expect(error.data).to.eql({ });
   });
 });

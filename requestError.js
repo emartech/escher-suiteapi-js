@@ -5,9 +5,6 @@ var SuiteRequestError = function(message, code, data) {
   this.name = 'SuiteRequestError';
   this.code = code;
   this.data = data || {};
-  if (!this.data.replyText) {
-    this.data.replyText = message;
-  }
   this.stack = new Error(message).stack;
 };
 

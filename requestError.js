@@ -1,10 +1,17 @@
 'use strict';
 
-var SuiteRequestError = function(message, code, data) {
+var SuiteRequestError = function(message, code, response) {
   this.message = message;
   this.name = 'SuiteRequestError';
   this.code = code;
-  this.data = data || {};
+  if (response) {
+    this.data = response.data || response;
+  } else {
+    this.data = {
+      replyText: message
+    };
+  }
+
   this.stack = new Error(message).stack;
 };
 

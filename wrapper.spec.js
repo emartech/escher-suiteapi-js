@@ -73,18 +73,35 @@ describe('Wrapper', function() {
       }
     });
 
-    it('should throw error when response body is empty', function *() {
-      apiResponse.body = '';
 
-      try {
-        yield wrapper.send();
+    it('should allow body to be empty', function *() {
+      apiResponse.headers['content-type'] = 'text/html';
+      apiResponse.body = '';
+      apiResponse.statusCode = 204;
+
+      var response = yield wrapper.send();
+
+      expect(response.statusCode).to.eql(204);
+    });
+
+
+    [
+      { body: '', errorMessage: 'Unexpected end of JSON input' },
+      { body: 'this is an invalid json', errorMessage: 'Unexpected token h in JSON at position 1' }
+    ].forEach(function(testCase, index) {
+      it('should throw error if json is not parsable #' + index, function *() {
+        apiResponse.body = testCase.body;
+
+        try {
+          yield wrapper.send();
+        } catch (err) {
+          expect(err).to.be.an.instanceof(SuiteRequestError);
+          expect(err.message).to.eql(testCase.errorMessage);
+          expect(err.code).to.eql(500);
+          return;
+        }
         throw new Error('Error should have been thrown');
-      } catch (err) {
-        expect(err).to.be.an.instanceof(SuiteRequestError);
-        expect(err.message).to.eql('Empty http response');
-        expect(err.code).to.eql(500);
-        expect(requestGetStub).to.be.calledWith(expectedRequestOptions);
-      }
+      });
     });
 
   });

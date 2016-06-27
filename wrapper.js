@@ -61,11 +61,6 @@ RequestWrapper.prototype = {
         return reject(new SuiteRequestError(err.message, 500));
       }
 
-      if (!response.body) {
-        logger.error('server_error', 'empty response data');
-        return reject(new SuiteRequestError('Empty http response', 500));
-      }
-
       if (response.headers['content-type'] === 'application/json') {
         try {
           response.body = JSON.parse(response.body);

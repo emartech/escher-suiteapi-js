@@ -5,96 +5,101 @@ var Wrapper = require('./wrapper');
 var SuiteRequestError = require('./requestError');
 
 describe('Wrapper', function() {
-  var apiRespone;
-  var protocol = 'http:';
-  var escherRequestOptions = {
-    port: 443,
-    host: 'very.host.io',
-    headers: [
-      ['content-type', 'very-format'],
-      ['x-custom', 'alma']
-    ],
-    method: 'GET',
-    path: '/purchases/1/content'
-  };
-
-  var requestOptions = {
-    uri: {
-      hostname: escherRequestOptions.host,
-      port: escherRequestOptions.port,
-      protocol: 'http:',
-      pathname: escherRequestOptions.path
-    },
-    headers: {
-      'content-type': 'very-format',
-      'x-custom': 'alma'
-    },
-    timeout: 15000
-  };
+  var apiResponse;
+  var escherRequestOptions;
+  var expectedRequestOptions;
 
   beforeEach(function() {
-    apiRespone = {
-      headers: {
-        'content-type': 'application/json'
+    apiResponse = {
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ data: 1 })
+    };
+
+    escherRequestOptions = {
+      port: 443,
+      host: 'very.host.io',
+      headers: [
+        ['content-type', 'very-format'],
+        ['x-custom', 'alma']
+      ],
+      method: 'GET',
+      path: '/purchases/1/content'
+    };
+
+    expectedRequestOptions = {
+      uri: {
+        hostname: 'very.host.io',
+        port: 443,
+        protocol: 'http:',
+        pathname: '/purchases/1/content'
       },
-      body: JSON.stringify({
-        data: 1
-      })
+      headers: {
+        'content-type': 'very-format',
+        'x-custom': 'alma'
+      },
+      timeout: 15000
     };
   });
 
-  it('should send GET request and return its response', function *() {
-    var requestGetStub = this.sandbox.stub(request, 'get', function(options, callback) {
-      callback(null, apiRespone);
+  describe('request handling', function() {
+    var wrapper;
+    var requestGetStub;
+
+    beforeEach(function() {
+      requestGetStub = this.sandbox.stub(request, 'get', function(options, callback) {
+        callback(null, apiResponse);
+      });
+      wrapper = new Wrapper(escherRequestOptions, 'http:');
     });
 
-    var wrapper = new Wrapper(escherRequestOptions, protocol);
+    it('should send GET request and return its response', function *() {
+      var response = yield wrapper.send();
+      expect(response).to.be.eql(apiResponse);
+      expect(requestGetStub).to.be.calledWith(expectedRequestOptions);
+    });
 
-    var response = yield wrapper.send();
-    expect(response).to.be.eql(apiRespone);
-    expect(requestGetStub).to.be.calledWith(requestOptions);
+    it('should throw error when response code is 400 or above', function *() {
+      apiResponse.statusCode = 400;
+      apiResponse.body = JSON.stringify({ replyText: 'Unknown route' });
+
+      try {
+        yield wrapper.send();
+        throw new Error('Error should have been thrown');
+      } catch (err) {
+        expect(err).to.be.an.instanceof(SuiteRequestError);
+        expect(err.message).to.eql('Error in http response (status: 400)');
+        expect(err.code).to.eql(400);
+        expect(requestGetStub).to.be.calledWith(expectedRequestOptions);
+      }
+    });
+
+    it('should throw error when response body is empty', function *() {
+      apiResponse.body = '';
+
+      try {
+        yield wrapper.send();
+        throw new Error('Error should have been thrown');
+      } catch (err) {
+        expect(err).to.be.an.instanceof(SuiteRequestError);
+        expect(err.message).to.eql('Empty http response');
+        expect(err.code).to.eql(500);
+        expect(requestGetStub).to.be.calledWith(expectedRequestOptions);
+      }
+    });
+
   });
 
-  it('should throw error when response code is 400 or above', function *() {
-    apiRespone.statusCode = 400;
-    apiRespone.body = JSON.stringify({
-      replyText: 'Unknown route'
+
+  it('should send GET request with given timeout on options', function*() {
+    var expectedRequestOption;
+    this.sandbox.stub(request, 'get', function(options, callback) {
+      expectedRequestOption = options;
+      callback(null, apiResponse);
     });
 
-    var requestGetStub = this.sandbox.stub(request, 'get', function(options, callback) {
-      callback(null, apiRespone);
-    });
+    escherRequestOptions.timeout = 60000;
+    yield (new Wrapper(escherRequestOptions, 'http:')).send();
 
-    var wrapper = new Wrapper(escherRequestOptions, protocol);
-
-    try {
-      yield wrapper.send();
-      throw new Error('Error should have been thrown');
-    } catch (err) {
-      expect(err).to.be.an.instanceof(SuiteRequestError);
-      expect(err.message).to.eql('Error in http response (status: 400)');
-      expect(err.code).to.eql(400);
-      expect(requestGetStub).to.be.calledWith(requestOptions);
-    }
-  });
-
-  it('should throw error when response body is empty', function *() {
-    apiRespone.body = '';
-
-    var requestGetStub = this.sandbox.stub(request, 'get', function(options, callback) {
-      callback(null, apiRespone);
-    });
-
-    var wrapper = new Wrapper(escherRequestOptions, protocol);
-
-    try {
-      yield wrapper.send();
-      throw new Error('Error should have been thrown');
-    } catch (err) {
-      expect(err).to.be.an.instanceof(SuiteRequestError);
-      expect(err.message).to.eql('Empty http response');
-      expect(err.code).to.eql(500);
-      expect(requestGetStub).to.be.calledWith(requestOptions);
-    }
+    expect(expectedRequestOption.timeout).to.be.eql(60000);
   });
 });

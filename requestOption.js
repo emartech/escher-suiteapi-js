@@ -9,6 +9,7 @@ var SuiteRequestOption = function(environment, options) {
   this.rejectUnauthorized = options.rejectUnauthorized !== false;
   this.headers = [['content-type', 'application/json'], ['host', environment]];
   this.prefix = '';
+  this.timeout = options.timeout || 0;
 
   if (!options) {
     options = {};
@@ -51,12 +52,21 @@ SuiteRequestOption.prototype = {
     return result ? result[1] : null;
   },
 
+  setTimeout: function(timeout) {
+    this.timeout = timeout;
+  },
+
+  getTimeout: function() {
+    return this.timeout;
+  },
+
   toHash: function() {
     var hash = {
       port: this.port,
       host: this.host,
       headers: this.headers,
-      prefix: this.prefix
+      prefix: this.prefix,
+      timeout: this.timeout
     };
 
     if (!this.rejectUnauthorized) {

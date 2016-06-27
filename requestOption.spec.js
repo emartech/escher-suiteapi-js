@@ -45,18 +45,18 @@ describe('SuiteRequestOption', function() {
     it('should return a default value', function() {
       var requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
-      expect(requestOptions.getTimeout()).to.be.eql(0);
+      expect(requestOptions.getTimeout()).to.be.eql(15000);
     });
 
     it('should return the timeout passed in the constructor', function() {
       var options = Object.assign({}, dummyServiceConfig);
-      options.timeout = 60000;
+      options.timeout = 0;
       var requestOptions = new SuiteRequestOption(dummyServiceConfig.host, options);
 
-      expect(requestOptions.getTimeout()).to.be.eql(60000);
+      expect(requestOptions.getTimeout()).to.be.eql(0);
     });
 
-    it('should return the timeout set', function() {
+    it('should return the timeout set by setTimeout', function() {
       var requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
       requestOptions.setTimeout(60000);
@@ -80,7 +80,7 @@ describe('SuiteRequestOption', function() {
         port: 1234,
         prefix: '/api',
         rejectUnauthorized: false,
-        timeout: 0
+        timeout: 15000
       });
     });
 

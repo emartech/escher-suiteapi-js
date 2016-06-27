@@ -9,7 +9,7 @@ var SuiteRequestOption = function(environment, options) {
   this.rejectUnauthorized = options.rejectUnauthorized !== false;
   this.headers = [['content-type', 'application/json'], ['host', environment]];
   this.prefix = '';
-  this.timeout = options.timeout || 0;
+  this.timeout = 'timeout' in options ? options.timeout : 15000;
 
   if (!options) {
     options = {};

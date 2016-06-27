@@ -23,7 +23,8 @@ describe('Wrapper', function() {
         ['x-custom', 'alma']
       ],
       method: 'GET',
-      path: '/purchases/1/content'
+      path: '/purchases/1/content',
+      timeout: 15000
     };
 
     expectedRequestOptions = {
@@ -90,16 +91,18 @@ describe('Wrapper', function() {
   });
 
 
-  it('should send GET request with given timeout on options', function*() {
-    var expectedRequestOption;
-    this.sandbox.stub(request, 'get', function(options, callback) {
-      expectedRequestOption = options;
-      callback(null, apiResponse);
+  describe('timeout', function() {
+    it('should send GET request with given timeout in options', function*() {
+      var actualRequestOption;
+      this.sandbox.stub(request, 'get', function(options, callback) {
+        actualRequestOption = options;
+        callback(null, apiResponse);
+      });
+
+      escherRequestOptions.timeout = 60000;
+      yield (new Wrapper(escherRequestOptions, 'http:')).send();
+
+      expect(actualRequestOption.timeout).to.be.eql(60000);
     });
-
-    escherRequestOptions.timeout = 60000;
-    yield (new Wrapper(escherRequestOptions, 'http:')).send();
-
-    expect(expectedRequestOption.timeout).to.be.eql(60000);
   });
 });

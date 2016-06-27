@@ -110,16 +110,16 @@ describe('Wrapper', function() {
 
   describe('timeout', function() {
     it('should send GET request with given timeout in options', function*() {
-      var expectedRequestOption;
+      var actualRequestOption;
       this.sandbox.stub(request, 'get', function(options, callback) {
-        expectedRequestOption = options;
+        actualRequestOption = options;
         callback(null, apiResponse);
       });
 
       escherRequestOptions.timeout = 60000;
       yield (new Wrapper(escherRequestOptions, 'http:')).send();
 
-      expect(expectedRequestOption.timeout).to.be.eql(60000);
+      expect(actualRequestOption.timeout).to.be.eql(60000);
     });
   });
 });

@@ -8,9 +8,6 @@ var _ = require('lodash');
 var request = require('request');
 var Timer = require('timer-machine');
 
-var DEFAULT_TIMEOUT = 15000;
-
-
 var RequestWrapper = function(requestOptions, protocol, payload) {
   this.requestOptions = requestOptions;
   this.protocol = protocol;
@@ -47,7 +44,7 @@ RequestWrapper.prototype = {
         pathname: this.requestOptions.path
       },
       headers: headers,
-      timeout: this.requestOptions.timeout || DEFAULT_TIMEOUT
+      timeout: this.requestOptions.timeout
     };
     debugLogger.log('wrapper_options', reqOptions);
 
@@ -96,7 +93,6 @@ RequestWrapper.prototype = {
   }
 
 };
-
 
 
 module.exports = RequestWrapper;

@@ -99,7 +99,7 @@ describe('Wrapper', function() {
           yield wrapper.send();
         } catch (err) {
           expect(err).to.be.an.instanceof(SuiteRequestError);
-          expect(err.message).to.eql('Unexpected end of JSON input');
+          expect(err.message).to.match(/Unexpected end/);
           expect(err.code).to.eql(500);
           return;
         }
@@ -131,7 +131,7 @@ describe('Wrapper', function() {
         yield wrapper.send();
       } catch (err) {
         expect(err).to.be.an.instanceof(SuiteRequestError);
-        expect(err.message).to.eql('Unexpected token h in JSON at position 1');
+        expect(err.message).to.match(/Unexpected token/);
         expect(err.code).to.eql(500);
         return;
       }

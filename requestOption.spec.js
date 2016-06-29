@@ -41,6 +41,21 @@ describe('SuiteRequestOption', function() {
 
   });
 
+  describe('allowEmptyResponse', function() {
+    it('should be set to false by default', function() {
+      var requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+
+      expect(requestOptions.allowEmptyResponse).to.eql(false);
+    });
+
+    it('should be set to the value provided in config', function() {
+      dummyServiceConfig.allowEmptyResponse = true;
+      var requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+
+      expect(requestOptions.allowEmptyResponse).to.eql(true);
+    });
+  });
+
   describe('timeout', function() {
     it('should return a default value', function() {
       var requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);

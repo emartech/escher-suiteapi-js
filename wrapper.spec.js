@@ -74,30 +74,32 @@ describe('Wrapper', function() {
       }
     });
 
-
-    it('should allow body to be empty', function *() {
-      apiResponse.headers['content-type'] = 'text/html';
-      apiResponse.body = '';
-      apiResponse.statusCode = 204;
-
-      var response = yield wrapper.send();
-
-      expect(response.statusCode).to.eql(204);
-    });
+    describe('when empty response is allowed', function() {
+      beforeEach(function() {
+        escherRequestOptions.allowEmptyResponse = true;
+        wrapper = new Wrapper(escherRequestOptions, 'http:');
+      });
 
 
-    [
-      { body: '', errorMessage: 'Unexpected end of JSON input' },
-      { body: 'this is an invalid json', errorMessage: 'Unexpected token h in JSON at position 1' }
-    ].forEach(function(testCase, index) {
-      it('should throw error if json is not parsable #' + index, function *() {
-        apiResponse.body = testCase.body;
+      it('should allow body to be empty', function *() {
+        apiResponse.headers['content-type'] = 'text/html';
+        apiResponse.body = '';
+        apiResponse.statusCode = 204;
+
+        var response = yield wrapper.send();
+
+        expect(response.statusCode).to.eql(204);
+      });
+
+
+      it('should throw error if json is not parsable (empty)', function *() {
+        apiResponse.body = '';
 
         try {
           yield wrapper.send();
         } catch (err) {
           expect(err).to.be.an.instanceof(SuiteRequestError);
-          expect(err.message).to.eql(testCase.errorMessage);
+          expect(err.message).to.eql('Unexpected end of JSON input');
           expect(err.code).to.eql(500);
           return;
         }
@@ -105,6 +107,36 @@ describe('Wrapper', function() {
       });
     });
 
+    describe('when empty response is not allowed', function() {
+      it('should throw error if response body is empty', function *() {
+        apiResponse.body = '';
+
+        try {
+          yield wrapper.send();
+        } catch (err) {
+          expect(err).to.be.an.instanceof(SuiteRequestError);
+          expect(err.message).to.eql('Empty http response');
+          expect(err.code).to.eql(500);
+          return;
+        }
+        throw new Error('Error should have been thrown');
+      });
+    });
+
+
+    it('should throw error if json is not parsable (malformed)', function *() {
+      apiResponse.body = 'this is an invalid json';
+
+      try {
+        yield wrapper.send();
+      } catch (err) {
+        expect(err).to.be.an.instanceof(SuiteRequestError);
+        expect(err.message).to.eql('Unexpected token h in JSON at position 1');
+        expect(err.code).to.eql(500);
+        return;
+      }
+      throw new Error('Error should have been thrown');
+    });
   });
 
 

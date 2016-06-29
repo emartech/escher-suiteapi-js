@@ -10,6 +10,7 @@ var SuiteRequestOption = function(environment, options) {
   this.headers = [['content-type', 'application/json'], ['host', environment]];
   this.prefix = '';
   this.timeout = 'timeout' in options ? options.timeout : 15000;
+  this.allowEmptyResponse = false;
 
   if (!options) {
     options = {};

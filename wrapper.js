@@ -58,7 +58,7 @@ RequestWrapper.prototype = {
         return reject(new SuiteRequestError(err.message, 500));
       }
 
-      if (!response.body) {
+      if (!this.requestOptions.allowEmptyResponse && !response.body) {
         logger.error('server_error', 'empty response data');
         return reject(new SuiteRequestError('Empty http response', 500));
       }

@@ -4,14 +4,18 @@ var SuiteRequestOption = require('./requestOption');
 
 describe('SuiteRequestOption', function() {
 
-  var dummyServiceConfig = {
-    host: 'localhost',
-    port: 1234,
-    prefix: '/api',
-    rejectUnauthorized: false,
-    secure: true,
-    credentialScope: 'eu/dummy/ems_request'
-  };
+  var dummyServiceConfig;
+
+  beforeEach(function() {
+    dummyServiceConfig = {
+      host: 'localhost',
+      port: 1234,
+      prefix: '/api',
+      rejectUnauthorized: false,
+      secure: true,
+      credentialScope: 'eu/dummy/ems_request'
+    };
+  });
 
   describe('header handling', function() {
 
@@ -97,6 +101,14 @@ describe('SuiteRequestOption', function() {
         rejectUnauthorized: false,
         timeout: 15000
       });
+      expect(requestOptions.toHash()).to.not.have.property('allowEmptyResponse');
+    });
+
+    it('should add allowEmptyResponse to hash if set to TRUE', function() {
+      dummyServiceConfig.allowEmptyResponse = true;
+      var requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+
+      expect(requestOptions.toHash()).to.have.property('allowEmptyResponse', true);
     });
 
   });

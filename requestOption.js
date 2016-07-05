@@ -74,6 +74,10 @@ SuiteRequestOption.prototype = {
       hash.rejectUnauthorized = false;
     }
 
+    if (this.allowEmptyResponse) {
+      hash.allowEmptyResponse = true;
+    }
+
     return hash;
   },
 

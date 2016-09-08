@@ -130,9 +130,6 @@ describe('Wrapper', function() {
         try {
           yield wrapper.send();
         } catch (err) {
-          expect(err).to.be.an.instanceof(SuiteRequestError);
-          expect(err.message).to.eql('Empty http response');
-          expect(err.code).to.eql(500);
           expect(err.data).to.eql(apiResponse.statusMessage);
           return;
         }

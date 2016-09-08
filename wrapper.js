@@ -60,7 +60,7 @@ RequestWrapper.prototype = {
 
       if (!this.requestOptions.allowEmptyResponse && !response.body) {
         logger.error('server_error', 'empty response data');
-        return reject(new SuiteRequestError('Empty http response', 500));
+        return reject(new SuiteRequestError('Empty http response', 500, response.statusMessage));
       }
 
       if (response.headers['content-type'] === 'application/json') {

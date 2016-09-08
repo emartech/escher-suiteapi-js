@@ -117,6 +117,20 @@ describe('Wrapper', function() {
           expect(err).to.be.an.instanceof(SuiteRequestError);
           expect(err.message).to.eql('Empty http response');
           expect(err.code).to.eql(500);
+          expect(err.data).to.eql({ replyText: 'Empty http response' });
+          return;
+        }
+        throw new Error('Error should have been thrown');
+      });
+
+      it('should throw error with status message if response body is empty and status message exists', function *() {
+        apiResponse.body = '';
+        apiResponse.statusMessage = 'dummy status message';
+
+        try {
+          yield wrapper.send();
+        } catch (err) {
+          expect(err.data).to.eql(apiResponse.statusMessage);
           return;
         }
         throw new Error('Error should have been thrown');

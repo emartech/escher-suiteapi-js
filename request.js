@@ -22,40 +22,36 @@ var SuiteRequest = function(accessKeyId, apiSecret, requestOptions) {
 SuiteRequest.prototype = {
 
   get: function(path) {
-    var options = this._getOptionsFor('GET', path);
-    var signedOptions = this._signRequest(options, '');
-
-    logger.log('send', this._getLogParameters(options));
-    return this._getRequestFor(signedOptions).send();
+    return this._request('GET', path);
   },
 
 
   post: function(path, data) {
-    var options = this._getOptionsFor('POST', path);
-    var payload = this._getPayload(data);
-    var signedOptions = this._signRequest(options, payload);
-
-    logger.log('send', this._getLogParameters(options));
-    return this._getRequestFor(signedOptions, payload).send();
+    return this._request('POST', path, data);
   },
 
 
   put: function(path, data) {
-    var options = this._getOptionsFor('PUT', path);
-    var payload = this._getPayload(data);
-    var signedOptions = this._signRequest(options, payload);
-
-    logger.log('send', this._getLogParameters(options));
-    return this._getRequestFor(signedOptions, payload).send();
+    return this._request('PUT', path, data);
   },
 
 
   delete: function(path) {
-    var options = this._getOptionsFor('DELETE', path);
+    return this._request('DELETE', path);
+  },
+
+
+  _request(method, path, data) {
+    var options = this._getOptionsFor(method, path);
     var signedOptions = this._signRequest(options, '');
+    var payload;
+
+    if (data) {
+      payload = this._getPayload(data);
+    }
 
     logger.log('send', this._getLogParameters(options));
-    return this._getRequestFor(signedOptions).send();
+    return this._getRequestFor(signedOptions, payload).send();
   },
 
 

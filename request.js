@@ -50,6 +50,15 @@ SuiteRequest.prototype = {
   },
 
 
+  delete: function(path) {
+    var options = this._getOptionsFor('DELETE', path);
+    var signedOptions = this._signRequest(options, '');
+
+    logger.log('send', this._getLogParameters(options));
+    return this._getRequestFor(signedOptions).send();
+  },
+
+
   setOptions: function(requestOptions) {
     this._options = requestOptions;
   },

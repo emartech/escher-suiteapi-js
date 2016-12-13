@@ -50,6 +50,18 @@ describe('SuiteRequest', function() {
     suiteRequest.post('/path', { name: 'Almanach' });
   });
 
+  it('should sign headers of DELETE request', function() {
+    var suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);
+
+    this.sandbox.stub(request, 'delete', function(options, callback) {
+      expect(options.headers['x-ems-auth'])
+        .to.have.string('SignedHeaders=content-type;host;x-ems-date,');
+      callback(null, createDummyResponse());
+    });
+
+    suiteRequest.delete('/path');
+  });
+
   it('should sign headers with non string values', function() {
     var suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);
     requestOptions.setHeader(['x-customer-id', 15]);

@@ -146,7 +146,8 @@ describe('SuiteRequest', function() {
 
     suiteRequest.post('/path', payload);
 
-    let parameters = [this.sandbox.match.any, JSON.stringify(payload), this.sandbox.match.any];
-    expect(Escher.prototype.signRequest.calledWith(...parameters)).to.eql(true);
+    expect(Escher.prototype.signRequest.callCount).to.eql(1);
+    let firstCall = Escher.prototype.signRequest.getCall(0);
+    expect(firstCall.args[1]).to.eql(JSON.stringify(payload));
   });
 });

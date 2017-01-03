@@ -41,14 +41,10 @@ SuiteRequest.prototype = {
   },
 
 
-  _request(method, path, data) {
+  _request: function(method, path, data) {
     var options = this._getOptionsFor(method, path);
-    var signedOptions = this._signRequest(options, '');
-    var payload;
-
-    if (data) {
-      payload = this._getPayload(data);
-    }
+    var payload = data ? this._getPayload(data) : '';
+    var signedOptions = this._signRequest(options, payload);
 
     logger.log('send', this._getLogParameters(options));
     return this._getRequestFor(signedOptions, payload).send();

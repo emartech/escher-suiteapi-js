@@ -2,6 +2,7 @@
 
 var SuiteRequest = require('./request');
 var request = require('request');
+var Escher = require('escher-auth');
 
 describe('SuiteRequest', function() {
   var serviceConfig = {
@@ -132,5 +133,20 @@ describe('SuiteRequest', function() {
     });
 
     suiteRequest.get('/path');
+  });
+
+  it('should sign the payload of POST request', function() {
+    let suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);
+    let payload = { name: 'Test' };
+    this.sandbox.spy(Escher.prototype, 'signRequest');
+
+    this.sandbox.stub(request, 'post', function(options, callback) {
+      callback(null, createDummyResponse());
+    });
+
+    suiteRequest.post('/path', payload);
+
+    let parameters = [this.sandbox.match.any, JSON.stringify(payload), this.sandbox.match.any];
+    expect(Escher.prototype.signRequest.calledWith(...parameters)).to.eql(true);
   });
 });

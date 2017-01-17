@@ -63,7 +63,7 @@ RequestWrapper.prototype = {
         return reject(new SuiteRequestError('Empty http response', 500, response.statusMessage));
       }
 
-      if (response.headers['content-type'] === 'application/json') {
+      if (this._isJsonResponse(response)) {
         try {
           response.body = JSON.parse(response.body);
         } catch (ex) {
@@ -91,6 +91,10 @@ RequestWrapper.prototype = {
 
   },
 
+  _isJsonResponse(response) {
+    return response.headers['content-type'] &&
+      response.headers['content-type'].indexOf('application/json') !== -1;
+  },
 
   _getLogParameters: function(extraParametersToLog) {
     var requestParametersToLog = _.pick(this.requestOptions, ['method', 'host', 'url']);

@@ -151,6 +151,16 @@ describe('Wrapper', function() {
       }
       throw new Error('Error should have been thrown');
     });
+
+    it('should parse JSON if content-type header contains charset too', function *() {
+      const testJson = { text: 'Test JSON text' };
+      apiResponse.headers['content-type'] = 'application/json; charset=utf-8';
+      apiResponse.body = JSON.stringify(testJson);
+
+      const response = yield wrapper.send();
+
+      expect(response.body).to.eql(testJson);
+    });
   });
 
 

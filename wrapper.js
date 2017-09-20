@@ -58,6 +58,17 @@ RequestWrapper.prototype = {
         return reject(new SuiteRequestError(err.message, 500));
       }
 
+      if (response.statusCode >= 400) {
+        logger.error('server_error', response.body.replyText, this._getLogParameters({
+          code: response.statusCode
+        }));
+        return reject(new SuiteRequestError(
+          'Error in http response (status: ' + response.statusCode + ')',
+          response.statusCode,
+          response.body
+        ));
+      }
+
       if (!this.requestOptions.allowEmptyResponse && !response.body) {
         logger.error('server_error', 'empty response data', this._getLogParameters());
         return reject(new SuiteRequestError('Empty http response', 500, response.statusMessage));
@@ -70,17 +81,6 @@ RequestWrapper.prototype = {
           logger.error('fatal_error', ex, this._getLogParameters());
           return reject(new SuiteRequestError(ex.message, 500));
         }
-      }
-
-      if (response.statusCode >= 400) {
-        logger.error('server_error', response.body.replyText, this._getLogParameters({
-          code: response.statusCode
-        }));
-        return reject(new SuiteRequestError(
-          'Error in http response (status: ' + response.statusCode + ')',
-          response.statusCode,
-          response.body
-        ));
       }
 
       timer.stop();

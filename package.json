@@ -33,7 +33,7 @@
     "bluebird": "3.4.1",
     "escher-auth": "0.3.0",
     "lodash": "4.14.0",
-    "logentries-logformat": "0.1.4",
+    "logentries-logformat": "0.2.0",
     "request": "2.74.0",
     "timer-machine": "1.1.0"
   },

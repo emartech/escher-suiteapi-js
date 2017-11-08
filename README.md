@@ -10,7 +10,7 @@ const SuiteRequest = require('escher-suiteapi-js');
 const options = new SuiteRequest.Options('example.host.com', {
   credentialScope: 'eu/service/ems_request'
 });
-const suiteRequest = EscherRequest.create('escher.key', 'escher.secret', options);
+const suiteRequest = SuiteRequest.create('escher.key', 'escher.secret', options);
 
 const heroId = 1;
 let response = await suiteRequest.get(`/heroes/${heroId}`);

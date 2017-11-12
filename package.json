@@ -28,7 +28,8 @@
   "dependencies": {
     "escher-auth": "1.0.0",
     "logentries-logformat": "0.2.0",
-    "request": "2.83.0"
+    "request": "2.83.0",
+    "request-promise-native": "^1.0.5"
   },
   "devDependencies": {
     "chai": "4.1.2",

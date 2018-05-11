@@ -27,7 +27,7 @@
   "homepage": "https://github.com/emartech/escher-suiteapi-js",
   "dependencies": {
     "@emartech/json-logger": "3.0.1",
-    "axios": "0.17.1",
+    "axios": "0.18.0",
     "escher-auth": "1.0.0"
   },
   "devDependencies": {

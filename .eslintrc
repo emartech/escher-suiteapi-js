@@ -8,7 +8,8 @@
     "expect": true
   },
   "rules": {
-    "security/detect-object-injection": 0
+    "security/detect-object-injection": 0,
+    "no-unused-expressions": 0
   },
   "extends": [
     "emarsys"

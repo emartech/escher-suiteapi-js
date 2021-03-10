@@ -2,7 +2,7 @@
   "name": "escher-suiteapi-js",
   "description": "Escher Suite Api js",
   "scripts": {
-    "test": "NODE_ENV=test mocha --require co-mocha --recursive ./lib",
+    "test": "NODE_ENV=test mocha --recursive ./lib",
     "code-style": "eslint $(find . -name \"*.js\" -not -path \"./node_modules/*\")",
     "semantic-release": "CI=true semantic-release"
   },
@@ -20,22 +20,24 @@
     "url": "https://github.com/emartech/escher-suiteapi-js/issues"
   },
   "homepage": "https://github.com/emartech/escher-suiteapi-js",
+  "engines": {
+    "node": ">=10.18"
+  },
   "dependencies": {
-    "@emartech/json-logger": "3.1.0",
-    "axios": "0.19.0",
-    "escher-auth": "3.2.0"
+    "@emartech/json-logger": "3.4.0",
+    "axios": "0.21.1",
+    "escher-auth": "3.2.4"
   },
   "devDependencies": {
     "chai": "4.2.0",
     "chai-subset": "1.6.0",
-    "co-mocha": "1.2.2",
-    "eslint": "5.16.0",
+    "eslint": "7.21.0",
     "eslint-config-emarsys": "5.1.0",
-    "eslint-plugin-no-only-tests": "2.3.1",
+    "eslint-plugin-no-only-tests": "2.4.0",
     "eslint-plugin-security": "1.4.0",
-    "mocha": "6.1.4",
-    "semantic-release": "15.13.12",
-    "sinon": "7.3.2",
-    "sinon-chai": "3.3.0"
+    "mocha": "8.3.1",
+    "semantic-release": "17.4.1",
+    "sinon": "9.2.4",
+    "sinon-chai": "3.5.0"
   }
 }

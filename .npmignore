@@ -3,6 +3,7 @@ node_modules
 *.spec.js
 mocha.opts
 .nyc_output
+src
 
 .idea
 

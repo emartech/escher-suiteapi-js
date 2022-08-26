@@ -1,5 +1,3 @@
-'use strict';
-
 const sinon = require('sinon');
 const chai = require('chai');
 const chaiSubset = require('chai-subset');

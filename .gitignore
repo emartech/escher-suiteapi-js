@@ -2,6 +2,7 @@
 logs
 *.log
 .nyc_output
+dist
 
 # Runtime data
 pids

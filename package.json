@@ -1,12 +1,16 @@
 {
   "name": "escher-suiteapi-js",
-  "description": "Escher Suite Api js",
+  "description": "Escher Request",
   "scripts": {
-    "test": "NODE_ENV=test mocha --recursive ./lib",
-    "code-style": "eslint $(find . -name \"*.js\" -not -path \"./node_modules/*\")",
+    "test": "mocha --require ts-node/register ./src/ --recursive",
+    "lint": "eslint $(find ./src -name \"*.js\" -not -path \"./node_modules/*\")",
+    "build": "rm -rf dist && tsc --project ./tsconfig.json",
     "semantic-release": "CI=true semantic-release"
   },
-  "main": "lib/request.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/request.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/emartech/escher-suiteapi-js.git"
@@ -24,11 +28,13 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "@emartech/json-logger": "4.0.1",
+    "@emartech/json-logger": "5.0.2",
     "axios": "0.27.2",
     "escher-auth": "3.2.4"
   },
   "devDependencies": {
+    "@types/node": "18.7.8",
+    "babel-eslint": "10.1.0",
     "chai": "4.3.6",
     "chai-subset": "1.6.0",
     "eslint": "7.21.0",
@@ -38,6 +44,8 @@
     "mocha": "10.0.0",
     "semantic-release": "17.4.7",
     "sinon": "14.0.0",
-    "sinon-chai": "3.7.0"
+    "sinon-chai": "3.7.0",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4"
   }
 }

@@ -1,15 +1,16 @@
 import Escher from 'escher-auth';
 import { Agent as HttpAgent } from 'http';
 import { Agent as HttpsAgent } from 'https';
-import { SuiteRequestOption } from './requestOption';
-import { RequestWrapper, ExtendedRequestOption } from './wrapper';
-import { SuiteRequestError } from './requestError';
+import { EscherRequestOption } from './requestOption';
+export { EscherRequestOption } from './requestOption';
+import { RequestWrapper, ExtendedRequestOption, TransformedResponse } from './wrapper';
+export { TransformedResponse } from './wrapper';
+import { EscherRequestError } from './requestError';
+export { EscherRequestError } from './requestError';
 import createLogger from '@emartech/json-logger';
 const logger = createLogger('suiterequest');
 
-export class SuiteRequest {
-  static Options = SuiteRequestOption;
-  static Error = SuiteRequestError;
+export class EscherRequest {
   static EscherConstants = {
     algoPrefix: 'EMS',
     vendorKey: 'EMS',
@@ -18,19 +19,19 @@ export class SuiteRequest {
     dateHeaderName: 'X-Ems-Date'
   };
   _escher: Escher;
-  _options: SuiteRequestOption;
+  _options: EscherRequestOption;
   httpAgent?: HttpAgent;
   httpsAgent?: HttpsAgent;
 
-  static create(accessKeyId: string, apiSecret: string, requestOptions: SuiteRequestOption) {
-    return new SuiteRequest(accessKeyId, apiSecret, requestOptions);
+  static create(accessKeyId: string, apiSecret: string, requestOptions: EscherRequestOption) {
+    return new EscherRequest(accessKeyId, apiSecret, requestOptions);
   }
 
-  constructor(accessKeyId: string, apiSecret: string, requestOptions: SuiteRequestOption) {
-    const escherConfig = Object.assign({}, SuiteRequest.EscherConstants, {
+  constructor(accessKeyId: string, apiSecret: string, requestOptions: EscherRequestOption) {
+    const escherConfig = Object.assign({}, EscherRequest.EscherConstants, {
       accessKeyId: accessKeyId,
       apiSecret: apiSecret,
-      credentialScope: requestOptions.credentialScope || SuiteRequest.EscherConstants.credentialScope
+      credentialScope: requestOptions.credentialScope || EscherRequest.EscherConstants.credentialScope
     });
 
     this._escher = new Escher(escherConfig);
@@ -42,24 +43,32 @@ export class SuiteRequest {
     }
   }
 
-  get(path: string, data: any) {
+  get<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
     return this._request('GET', path, data);
   }
 
-  patch(path: string, data: any) {
+  patch<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
     return this._request('PATCH', path, data);
   }
 
-  post(path: string, data: any) {
+  post<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
     return this._request('POST', path, data);
   }
 
-  put(path: string, data: any) {
+  put<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
     return this._request('PUT', path, data);
   }
 
-  delete(path: string) {
+  delete<T = any>(path: string): Promise<TransformedResponse<T>> {
     return this._request('DELETE', path);
+  }
+
+  setOptions(requestOptions: EscherRequestOption): void {
+    this._options = requestOptions;
+  }
+
+  getOptions(): EscherRequestOption {
+    return this._options;
   }
 
   _request(method: string, path: string, data?: any) {
@@ -69,14 +78,6 @@ export class SuiteRequest {
 
     logger.info('send', this._getLogParameters(options));
     return this._getRequestFor(signedOptions, payload).send();
-  }
-
-  setOptions(requestOptions: SuiteRequestOption) {
-    this._options = requestOptions;
-  }
-
-  getOptions() {
-    return this._options;
   }
 
   _getRequestFor(requestOptions: ExtendedRequestOption, payload: any) {
@@ -118,6 +119,3 @@ export class SuiteRequest {
     return JSON.stringify(data);
   }
 }
-
-module.exports = SuiteRequest;
-export default SuiteRequest;

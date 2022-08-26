@@ -1,11 +1,11 @@
 const axios = require('axios');
 const { RequestWrapper } = require('./wrapper');
-const { SuiteRequestError } = require('./requestError');
-const { SuiteRequestOption } = require('./requestOption');
+const { EscherRequestError } = require('./requestError');
+const { EscherRequestOption } = require('./requestOption');
 const http = require('http');
 const https = require('https');
 
-describe('Wrapper', function() {
+describe('RequestWrapper', function() {
   let apiResponse;
   let expectedApiResponse;
   let escherRequestOptions;
@@ -26,7 +26,7 @@ describe('Wrapper', function() {
       statusMessage: 'OK'
     };
 
-    escherRequestOptions = new SuiteRequestOption('very.host.io', {
+    escherRequestOptions = new EscherRequestOption('very.host.io', {
       port: 443,
       headers: [
         ['content-type', 'very-format'],
@@ -102,7 +102,7 @@ describe('Wrapper', function() {
         await wrapper.send();
         throw new Error('Error should have been thrown');
       } catch (err) {
-        expect(err).to.be.an.instanceof(SuiteRequestError);
+        expect(err).to.be.an.instanceof(EscherRequestError);
         expect(err.message).to.eql('Error in http response (status: 400)');
         expect(err.code).to.eql(400);
         expect(err.data).to.eql({ replyText: 'Unknown route' });
@@ -133,7 +133,7 @@ describe('Wrapper', function() {
         try {
           await wrapper.send();
         } catch (err) {
-          expect(err).to.be.an.instanceof(SuiteRequestError);
+          expect(err).to.be.an.instanceof(EscherRequestError);
           expect(err.message).to.match(/Unexpected end/);
           expect(err.code).to.eql(500);
           return;
@@ -149,7 +149,7 @@ describe('Wrapper', function() {
         try {
           await wrapper.send();
         } catch (err) {
-          expect(err).to.be.an.instanceof(SuiteRequestError);
+          expect(err).to.be.an.instanceof(EscherRequestError);
           expect(err.message).to.eql('Empty http response');
           expect(err.code).to.eql(500);
           expect(err.data).to.eql(expectedApiResponse.statusMessage);
@@ -180,7 +180,7 @@ describe('Wrapper', function() {
           await wrapper.send();
           throw new Error('should throw');
         } catch (err) {
-          expect(err).to.be.an.instanceOf(SuiteRequestError);
+          expect(err).to.be.an.instanceOf(EscherRequestError);
           expect(err.code).to.eql(apiResponse.status);
           expect(err.message).to.eql('Error in http response (status: 404)');
           expect(err.data).to.eql(apiResponse.data);
@@ -252,7 +252,7 @@ describe('Wrapper', function() {
       try {
         await wrapper.send();
       } catch (err) {
-        expect(err).to.be.an.instanceof(SuiteRequestError);
+        expect(err).to.be.an.instanceof(EscherRequestError);
         expect(err.message).to.match(/Unexpected token/);
         expect(err.code).to.eql(500);
         return;

@@ -11,10 +11,10 @@ export interface RequestOptions {
   allowEmptyResponse?: boolean;
   maxContentLength?: number;
   keepAlive?: boolean;
-  environment?: string;
+  credentialScope?: string;
 }
 
-export class SuiteRequestOption {
+export class EscherRequestOption implements RequestOptions {
   secure = true;
   port = 443;
   host = '';
@@ -27,26 +27,26 @@ export class SuiteRequestOption {
   keepAlive = false;
   credentialScope = '';
 
-  static createForInternalApi(environment: string, rejectUnauthorized: boolean) {
-    return this.create(environment, '/api/v2/internal', rejectUnauthorized);
+  static createForInternalApi(host: string | RequestOptions, rejectUnauthorized: boolean) {
+    return this.create(host, '/api/v2/internal', rejectUnauthorized);
   }
 
-  static createForServiceApi(environment: string, rejectUnauthorized: boolean) {
-    return this.create(environment, '/api/services', rejectUnauthorized);
+  static createForServiceApi(host: string | RequestOptions, rejectUnauthorized: boolean) {
+    return this.create(host, '/api/services', rejectUnauthorized);
   }
 
-  static create(host: string, prefix: string, rejectUnauthorized: boolean) {
+  static create(host: string | RequestOptions, prefix = '', rejectUnauthorized = true) {
     let options: RequestOptions = {};
 
     if (typeof host === 'object') {
       options = host;
-      host = options.environment || '';
+      host = options.host || '';
     } else {
       options.rejectUnauthorized = rejectUnauthorized;
     }
 
     options.prefix = prefix;
-    return new SuiteRequestOption(host, options);
+    return new EscherRequestOption(host, options);
   }
 
   constructor(host: string, options: RequestOptions) {
@@ -79,8 +79,8 @@ export class SuiteRequestOption {
     this.secure = false;
   }
 
-  setEnvironment(environment: string) {
-    this.host = environment;
+  setHost(host: string) {
+    this.host = host;
   }
 
   setPort(port: number) {

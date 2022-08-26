@@ -1,4 +1,4 @@
-import { SuiteRequestError } from './requestError';
+import { EscherRequestError } from './requestError';
 import { RequestOptions } from './requestOption';
 import { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders, CancelTokenSource } from 'axios';
 import { Agent as HttpAgent } from 'http';
@@ -16,7 +16,7 @@ export interface ExtendedRequestOption extends RequestOptions {
   httpsAgent?: HttpsAgent;
 }
 
-interface TransformedResponse<T = any> {
+export interface TransformedResponse<T = any> {
   body: T,
   statusCode: number;
   statusMessage: string;
@@ -39,7 +39,7 @@ export class RequestWrapper {
     });
   }
 
-  send() {
+  send<T = any>(): Promise<TransformedResponse<T>> {
     const timer = logger.timer();
 
     const method = this.requestOptions.method.toLowerCase();
@@ -95,16 +95,16 @@ export class RequestWrapper {
     const recoverableErrorCodes = ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'ECONNABORTED'];
     const code = recoverableErrorCodes.includes(error.code || '') ? 503 : 500;
 
-    throw new SuiteRequestError(error.message, code, undefined, error.code);
+    throw new EscherRequestError(error.message, code, undefined, error.code);
   }
 
-  _handleResponse(response: TransformedResponse) {
+  _handleResponse<T = any>(response: TransformedResponse): TransformedResponse<T> {
     if (response.statusCode >= 400) {
       logger.error('server_error', this._getLogParameters({
         code: response.statusCode,
         reply_text: response.body.replyText
       }));
-      throw new SuiteRequestError(
+      throw new EscherRequestError(
         'Error in http response (status: ' + response.statusCode + ')',
         response.statusCode,
         this._parseBody(response)
@@ -113,7 +113,7 @@ export class RequestWrapper {
 
     if (!this.requestOptions.allowEmptyResponse && !response.body) {
       logger.error('server_error empty response data', this._getLogParameters());
-      throw new SuiteRequestError('Empty http response', 500, response.statusMessage);
+      throw new EscherRequestError('Empty http response', 500, response.statusMessage);
     }
 
     return {
@@ -167,7 +167,7 @@ export class RequestWrapper {
       return JSON.parse(response.body);
     } catch (ex) {
       logger.fromError('fatal_error', ex, this._getLogParameters());
-      throw new SuiteRequestError((ex as Error).message, 500);
+      throw new EscherRequestError((ex as Error).message, 500);
     }
   }
 }

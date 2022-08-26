@@ -1,6 +1,4 @@
-'use strict';
-
-const SuiteRequestOption = require('./requestOption');
+const { SuiteRequestOption } = require('./requestOption');
 
 describe('SuiteRequestOption', function() {
 

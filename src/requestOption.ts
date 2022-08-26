@@ -1,23 +1,46 @@
-'use strict';
-
 const MEGA_BYTE = 1024 * 1024;
 
-class SuiteRequestOption {
+export interface RequestOptions {
+  secure?: boolean;
+  port?: number;
+  host?: string;
+  rejectUnauthorized?: boolean;
+  headers?: string[][];
+  prefix?: string;
+  timeout?: number;
+  allowEmptyResponse?: boolean;
+  maxContentLength?: number;
+  keepAlive?: boolean;
+  environment?: string;
+}
 
-  static createForInternalApi(environment, rejectUnauthorized) {
+export class SuiteRequestOption {
+  secure = true;
+  port = 443;
+  host = '';
+  rejectUnauthorized = true;
+  headers: string[][] = [];
+  prefix = '';
+  timeout = 15000;
+  allowEmptyResponse = false;
+  maxContentLength = 10 * MEGA_BYTE;
+  keepAlive = false;
+  credentialScope = '';
+
+  static createForInternalApi(environment: string, rejectUnauthorized: boolean) {
     return this.create(environment, '/api/v2/internal', rejectUnauthorized);
   }
 
-  static createForServiceApi(environment, rejectUnauthorized) {
+  static createForServiceApi(environment: string, rejectUnauthorized: boolean) {
     return this.create(environment, '/api/services', rejectUnauthorized);
   }
 
-  static create(host, prefix, rejectUnauthorized) {
-    let options = {};
+  static create(host: string, prefix: string, rejectUnauthorized: boolean) {
+    let options: RequestOptions = {};
 
     if (typeof host === 'object') {
       options = host;
-      host = options.environment;
+      host = options.environment || '';
     } else {
       options.rejectUnauthorized = rejectUnauthorized;
     }
@@ -26,14 +49,14 @@ class SuiteRequestOption {
     return new SuiteRequestOption(host, options);
   }
 
-  constructor(host, options) {
+  constructor(host: string, options: RequestOptions) {
     this.secure = options.secure !== false;
     this.port = options.port || 443;
     this.host = host;
     this.rejectUnauthorized = options.rejectUnauthorized !== false;
     this.headers = [['content-type', 'application/json'], ['host', host]];
     this.prefix = '';
-    this.timeout = 'timeout' in options ? options.timeout : 15000;
+    this.timeout = options.timeout || 15000;
     this.allowEmptyResponse = false;
     this.maxContentLength = options.maxContentLength || 10 * MEGA_BYTE;
     this.keepAlive = !!options.keepAlive;
@@ -45,32 +68,32 @@ class SuiteRequestOption {
     Object.assign(this, options);
   }
 
-  setToSecure(port, rejectUnauthorized) {
+  setToSecure(port: number, rejectUnauthorized: boolean) {
     this.port = port || 443;
     this.secure = true;
     this.rejectUnauthorized = rejectUnauthorized;
   }
 
-  setToUnsecure(port) {
+  setToUnsecure(port: number) {
     this.port = port || 80;
     this.secure = false;
   }
 
-  setEnvironment(environment) {
+  setEnvironment(environment: string) {
     this.host = environment;
   }
 
-  setPort(port) {
+  setPort(port: number) {
     this.port = port;
   }
 
-  setHeader(headerToSet) {
+  setHeader(headerToSet: string[]) {
     this.headers = this.headers
-      .filter(this._headersExcept(headerToSet[0]))
+      .filter(existingHeader => existingHeader[0] !== headerToSet[0])
       .concat([headerToSet]);
   }
 
-  getHeader(name) {
+  getHeader(name: string) {
     const result = this.headers.find((header) => {
       return header[0].toLowerCase() === name.toLowerCase();
     });
@@ -78,7 +101,7 @@ class SuiteRequestOption {
     return result ? result[1] : null;
   }
 
-  setTimeout(timeout) {
+  setTimeout(timeout: number) {
     this.timeout = timeout;
   }
 
@@ -86,8 +109,8 @@ class SuiteRequestOption {
     return this.timeout;
   }
 
-  toHash() {
-    const hash = {
+  toHash(): RequestOptions {
+    const hash: RequestOptions = {
       port: this.port,
       host: this.host,
       headers: this.headers.slice(0),
@@ -106,12 +129,4 @@ class SuiteRequestOption {
 
     return hash;
   }
-
-  _headersExcept(headerKeyToSkip) {
-    return function(existingHeader) {
-      return existingHeader[0] !== headerKeyToSkip;
-    };
-  }
 }
-
-module.exports = SuiteRequestOption;

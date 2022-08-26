@@ -1,6 +1,4 @@
-'use strict';
-
-const SuiteRequestError = require('./requestError');
+const { SuiteRequestError } = require('./requestError');
 
 describe('SuiteRequestError', function() {
   it('should extend base Error class', function() {

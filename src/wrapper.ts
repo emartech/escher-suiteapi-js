@@ -1,13 +1,34 @@
-'use strict';
+import { SuiteRequestError } from './requestError';
+import { RequestOptions } from './requestOption';
+import { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders, CancelTokenSource } from 'axios';
+import { Agent as HttpAgent } from 'http';
+import { Agent as HttpsAgent } from 'https';
+import axios from 'axios';
+import createLogger from '@emartech/json-logger';
+const logger = createLogger('suiterequest');
+const debugLogger = createLogger('suiterequest-debug');
 
-const SuiteRequestError = require('./requestError');
-const logger = require('@emartech/json-logger')('suiterequest');
-const debugLogger = require('@emartech/json-logger')('suiterequest-debug');
-const axios = require('axios');
+export interface ExtendedRequestOption extends RequestOptions {
+  method: string;
+  url: string;
+  path: string;
+  httpAgent?: HttpAgent;
+  httpsAgent?: HttpsAgent;
+}
 
-class RequestWrapper {
+interface TransformedResponse<T = any> {
+  body: T,
+  statusCode: number;
+  statusMessage: string;
+  headers: AxiosResponseHeaders
+}
 
-  constructor(requestOptions, protocol, payload) {
+export class RequestWrapper {
+  protocol: string;
+  payload: any;
+  requestOptions: ExtendedRequestOption;
+
+  constructor(requestOptions : ExtendedRequestOption, protocol: string, payload: any = undefined) {
     this.requestOptions = requestOptions;
     this.protocol = protocol;
     this.payload = payload;
@@ -25,11 +46,11 @@ class RequestWrapper {
     const reqOptions = this._getRequestOptions();
     const source = axios.CancelToken.source();
 
-    const axiosOptions = {
+    const axiosOptions: AxiosRequestConfig = {
       method,
-      url: `${reqOptions.uri.protocol}//${reqOptions.uri.hostname}:${reqOptions.uri.port}${reqOptions.uri.pathname}`,
+      url: reqOptions.url,
       headers: reqOptions.headers,
-      data: reqOptions.body,
+      data: reqOptions.data,
       timeout: reqOptions.timeout,
       transformResponse: [body => body],
       maxContentLength: this.requestOptions.maxContentLength,
@@ -48,14 +69,14 @@ class RequestWrapper {
         response => this._transformResponse(response),
         error => this._handleResponseError(error, source)
       )
-      .then(response => {
+      .then((response: any) => {
         timer.info('send', this._getLogParameters());
 
         return this._handleResponse(response);
       });
   }
 
-  _transformResponse(response) {
+  _transformResponse(response: AxiosResponse): TransformedResponse {
     return {
       body: response.data,
       statusCode: response.status,
@@ -64,7 +85,7 @@ class RequestWrapper {
     };
   }
 
-  _handleResponseError(error, source) {
+  _handleResponseError(error: AxiosError, source: CancelTokenSource) {
     if (!axios.isCancel(error)) {
       source.cancel();
       logger.info('Canceled request');
@@ -72,12 +93,12 @@ class RequestWrapper {
     logger.fromError('fatal_error', error, this._getLogParameters());
 
     const recoverableErrorCodes = ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'ECONNABORTED'];
-    const code = recoverableErrorCodes.includes(error.code) ? 503 : 500;
+    const code = recoverableErrorCodes.includes(error.code || '') ? 503 : 500;
 
-    throw new SuiteRequestError(error.message, code, {}, error.code);
+    throw new SuiteRequestError(error.message, code, undefined, error.code);
   }
 
-  _handleResponse(response) {
+  _handleResponse(response: TransformedResponse) {
     if (response.statusCode >= 400) {
       logger.error('server_error', this._getLogParameters({
         code: response.statusCode,
@@ -103,44 +124,41 @@ class RequestWrapper {
     };
   }
 
-  _isJsonResponse(response) {
+  _isJsonResponse(response: TransformedResponse) {
     return response.headers['content-type'] &&
       response.headers['content-type'].indexOf('application/json') !== -1;
   }
 
-  _getLogParameters(extraParametersToLog) {
+  _getLogParameters(extraParametersToLog = {}) {
     const { method, host, url } = this.requestOptions;
     const requestParametersToLog = { method, host, url };
     return Object.assign({}, requestParametersToLog, extraParametersToLog);
   }
 
   _getRequestOptions() {
-    const headers = {};
+    const headers: Record<string, string> = {};
 
-    this.requestOptions.headers.forEach(function(header) {
-      headers[header[0]] = header[1];
-    });
+    if (this.requestOptions.headers) {
+      this.requestOptions.headers.forEach(function(header) {
+        headers[header[0]] = header[1];
+      });
+    }
 
-    const reqOptions = {
-      uri: {
-        hostname: this.requestOptions.host,
-        port: this.requestOptions.port,
-        protocol: this.protocol,
-        pathname: this.requestOptions.path
-      },
+    const reqOptions: AxiosRequestConfig = {
+      url: `${this.protocol}//${this.requestOptions.host}:${this.requestOptions.port}${this.requestOptions.path}`,
       headers: headers,
       timeout: this.requestOptions.timeout
     };
     debugLogger.info('wrapper_options', reqOptions);
 
     if (this.payload) {
-      reqOptions.body = this.payload;
+      reqOptions.data = this.payload;
     }
 
     return reqOptions;
   }
 
-  _parseBody(response) {
+  _parseBody(response: TransformedResponse) {
     if (!this._isJsonResponse(response)) {
       return response.body;
     }
@@ -149,9 +167,7 @@ class RequestWrapper {
       return JSON.parse(response.body);
     } catch (ex) {
       logger.fromError('fatal_error', ex, this._getLogParameters());
-      throw new SuiteRequestError(ex.message, 500);
+      throw new SuiteRequestError((ex as Error).message, 500);
     }
   }
 }
-
-module.exports = RequestWrapper;

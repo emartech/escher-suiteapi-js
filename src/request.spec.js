@@ -1,5 +1,3 @@
-'use strict';
-
 const SuiteRequest = require('./request');
 const axios = require('axios');
 const Escher = require('escher-auth');
@@ -33,87 +31,87 @@ describe('SuiteRequest', function() {
     suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);
   });
 
-  it('should sign headers of GET request', function*() {
-    yield suiteRequest.get('/path');
+  it('should sign headers of GET request', async () => {
+    await suiteRequest.get('/path');
 
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.headers['x-ems-auth']).to.have.string('SignedHeaders=content-type;host;x-ems-date,');
   });
 
-  it('should sign headers of PATCH request', function*() {
-    yield suiteRequest.patch('/path', { name: 'Almanach' });
+  it('should sign headers of PATCH request', async () => {
+    await suiteRequest.patch('/path', { name: 'Almanach' });
 
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.headers['x-ems-auth']).to.have.string('SignedHeaders=content-type;host;x-ems-date,');
   });
 
-  it('should sign headers of POST request', function*() {
-    yield suiteRequest.post('/path', { name: 'Almanach' });
+  it('should sign headers of POST request', async () => {
+    await suiteRequest.post('/path', { name: 'Almanach' });
 
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.headers['x-ems-auth']).to.have.string('SignedHeaders=content-type;host;x-ems-date,');
   });
 
-  it('should sign headers of DELETE request', function*() {
-    yield suiteRequest.delete('/path');
+  it('should sign headers of DELETE request', async () => {
+    await suiteRequest.delete('/path');
 
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.headers['x-ems-auth']).to.have.string('SignedHeaders=content-type;host;x-ems-date,');
   });
 
-  it('should sign headers with non string values', function*() {
+  it('should sign headers with non string values', async () => {
     requestOptions.setHeader(['x-customer-id', 15]);
 
-    yield suiteRequest.post('/path', { name: 'Almanach' });
+    await suiteRequest.post('/path', { name: 'Almanach' });
 
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.headers['x-ems-auth']).to.have.string('content-type;host;x-customer-id;x-ems-date,');
   });
 
-  it('should encode payload when content type is json', function*() {
-    yield suiteRequest.post('/path', { name: 'Almanach' });
+  it('should encode payload when content type is json', async () => {
+    await suiteRequest.post('/path', { name: 'Almanach' });
 
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.data).to.eql('{"name":"Almanach"}');
   });
 
-  it('should encode payload when content type is json and method is GET', function*() {
-    yield suiteRequest.get('/path', { name: 'Almanach' });
+  it('should encode payload when content type is json and method is GET', async () => {
+    await suiteRequest.get('/path', { name: 'Almanach' });
 
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.data).to.eql('{"name":"Almanach"}');
   });
 
-  it('should encode payload when content type is utf8 json', function*() {
+  it('should encode payload when content type is utf8 json', async () => {
     requestOptions.setHeader(['content-type', 'application/json;charset=utf-8']);
 
-    yield suiteRequest.post('/path', { name: 'Almanach' });
+    await suiteRequest.post('/path', { name: 'Almanach' });
 
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.data).to.eql('{"name":"Almanach"}');
   });
 
-  it('should skip encoding of payload when content type is not json', function*() {
+  it('should skip encoding of payload when content type is not json', async () => {
     requestOptions.setHeader(['content-type', 'text/csv']);
 
-    yield suiteRequest.post('/path', 'header1;header2');
+    await suiteRequest.post('/path', 'header1;header2');
 
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.data).to.eql('header1;header2');
   });
 
-  it('signs extra headers too', function*() {
+  it('signs extra headers too', async () => {
     requestOptions.setHeader(['extra-header', 'header-value']);
 
-    yield suiteRequest.get('/path');
+    await suiteRequest.get('/path');
 
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.headers['x-ems-auth'])
       .to.have.string('SignedHeaders=content-type;extra-header;host;x-ems-date,');
   });
 
-  it('should pass down parameters to request call from request options', function*() {
-    yield suiteRequest.post('/path', { name: 'Almanach' });
+  it('should pass down parameters to request call from request options', async () => {
+    await suiteRequest.post('/path', { name: 'Almanach' });
 
     const requestArgument = requestStub.args[0][0];
 
@@ -126,33 +124,33 @@ describe('SuiteRequest', function() {
     });
   });
 
-  it('should sign the payload of PATCH request', function*() {
+  it('should sign the payload of PATCH request', async function() {
     const payload = { name: 'Test' };
     this.sandbox.spy(Escher.prototype, 'signRequest');
 
-    yield suiteRequest.patch('/path', payload);
+    await suiteRequest.patch('/path', payload);
 
     expect(Escher.prototype.signRequest.callCount).to.eql(1);
     const firstCall = Escher.prototype.signRequest.getCall(0);
     expect(firstCall.args[1]).to.eql(JSON.stringify(payload));
   });
 
-  it('should sign the payload of POST request', function*() {
+  it('should sign the payload of POST request', async function() {
     const payload = { name: 'Test' };
     this.sandbox.spy(Escher.prototype, 'signRequest');
 
-    yield suiteRequest.post('/path', payload);
+    await suiteRequest.post('/path', payload);
 
     expect(Escher.prototype.signRequest.callCount).to.eql(1);
     const firstCall = Escher.prototype.signRequest.getCall(0);
     expect(firstCall.args[1]).to.eql(JSON.stringify(payload));
   });
 
-  it('should sign the payload of GET request', function*() {
+  it('should sign the payload of GET request', async function() {
     const payload = { name: 'Test' };
     this.sandbox.spy(Escher.prototype, 'signRequest');
 
-    yield suiteRequest.get('/path', payload);
+    await suiteRequest.get('/path', payload);
 
     expect(Escher.prototype.signRequest.callCount).to.eql(1);
     const firstCall = Escher.prototype.signRequest.getCall(0);
@@ -175,11 +173,11 @@ describe('SuiteRequest', function() {
     expect(suiteRequest.httpsAgent).to.be.an.instanceOf(https.Agent);
   });
 
-  it('should pass http agents to wrapper', function*() {
+  it('should pass http agents to wrapper', async () => {
     requestOptions = new SuiteRequest.Options(serviceConfig.host, Object.assign({ keepAlive: true }, serviceConfig));
     suiteRequest = SuiteRequest.create('key-id', 'secret', requestOptions);
 
-    yield suiteRequest.post('/path', { name: 'Almanach' });
+    await suiteRequest.post('/path', { name: 'Almanach' });
 
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.httpAgent).to.eql(suiteRequest.httpAgent);

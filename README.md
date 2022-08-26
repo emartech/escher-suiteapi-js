@@ -1,24 +1,45 @@
-# Escher Suite API client for JavaScript
-[![Dependency Status](https://david-dm.org/emartech/escher-suiteapi-js.svg)](https://david-dm.org/emartech/escher-suiteapi-js)
-[![devDependency Status](https://david-dm.org/emartech/escher-suiteapi-js/dev-status.svg)](https://david-dm.org/emartech/escher-suiteapi-js#info=devDependencies)
+# @emartech/escher-request
 
 ## Usage
 
-```javascript
-const SuiteRequest = require('escher-suiteapi-js');
+### Javascript
 
-const options = new SuiteRequest.Options('example.host.com', {
+```javascript
+const { EscherRequest, EscherRequestOption } = require('@emartech/escher-request');
+
+const options = new EscherRequestOption('example.host.com', {
   credentialScope: 'eu/service/ems_request'
 });
-const suiteRequest = SuiteRequest.create('escher.key', 'escher.secret', options);
+const request = EscherRequest.create('escher.key', 'escher.secret', options);
 
 const heroId = 1;
-let response = await suiteRequest.get(`/heroes/${heroId}`);
-console.log(response);
+const hero = await request.get(`/heroes/${heroId}`);
+console.log(hero);
 
-let response = await suiteRequest.post('/heroes', {
+const heroes = await request.post('/heroes', {
   name: 'Captain America',
   sex: 'male'
 });
-console.log(response);
+console.log(heroes);
+```
+
+### Typescript
+
+```typescript
+const { EscherRequest, EscherRequestOption } = require('@emartech/escher-request');
+
+const options = new EscherRequestOption('example.host.com', {
+  credentialScope: 'eu/service/ems_request'
+});
+const request = EscherRequest.create('escher.key', 'escher.secret', options);
+
+const heroId = 1;
+const hero = await request.get<{ name: string; }>(`/heroes/${heroId}`);
+console.log(hero);
+
+const heroes = await request.post<{ name: string; }[]>('/heroes', {
+  name: 'Captain America',
+  sex: 'male'
+});
+console.log(heroes);
 ```

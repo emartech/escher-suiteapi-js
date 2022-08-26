@@ -4,7 +4,7 @@ import { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders, Ca
 import { Agent as HttpAgent } from 'http';
 import { Agent as HttpsAgent } from 'https';
 import axios from 'axios';
-import createLogger from '@emartech/json-logger';
+import { createLogger } from '@emartech/json-logger';
 const logger = createLogger('suiterequest');
 const debugLogger = createLogger('suiterequest-debug');
 

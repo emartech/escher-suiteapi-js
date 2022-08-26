@@ -7,7 +7,7 @@ import { RequestWrapper, ExtendedRequestOption, TransformedResponse } from './wr
 export { TransformedResponse } from './wrapper';
 import { EscherRequestError } from './requestError';
 export { EscherRequestError } from './requestError';
-import createLogger from '@emartech/json-logger';
+import { createLogger } from '@emartech/json-logger';
 const logger = createLogger('suiterequest');
 
 export class EscherRequest {

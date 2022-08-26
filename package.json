@@ -28,7 +28,7 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "@emartech/json-logger": "5.0.2",
+    "@emartech/json-logger": "6.0.0",
     "axios": "0.27.2",
     "escher-auth": "3.2.4"
   },

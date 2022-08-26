@@ -1,7 +1,6 @@
-const { SuiteRequestOption } = require('./requestOption');
+const { EscherRequestOption } = require('./requestOption');
 
-describe('SuiteRequestOption', function() {
-
+describe('EscherRequestOption', function() {
   let dummyServiceConfig;
 
   beforeEach(function() {
@@ -17,15 +16,23 @@ describe('SuiteRequestOption', function() {
 
   describe('create', function() {
     it('should populate options with parameters', function() {
-      const options = SuiteRequestOption.create('example-host', '/api-test', true);
+      const options = EscherRequestOption.create('example-host', '/api-test', true);
 
       expect(options.rejectUnauthorized).to.eql(true);
       expect(options.host).to.eql('example-host');
       expect(options.prefix).to.eql('/api-test');
     });
 
+    it('should populate options with default parameters', function() {
+      const options = EscherRequestOption.create('example-host');
+
+      expect(options.rejectUnauthorized).to.eql(true);
+      expect(options.host).to.eql('example-host');
+      expect(options.prefix).to.eql('');
+    });
+
     it('should populate options with for internal api', function() {
-      const options = SuiteRequestOption.createForInternalApi('example-host', true);
+      const options = EscherRequestOption.createForInternalApi('example-host', true);
 
       expect(options.rejectUnauthorized).to.eql(true);
       expect(options.host).to.eql('example-host');
@@ -33,7 +40,7 @@ describe('SuiteRequestOption', function() {
     });
 
     it('should populate options with for services api', function() {
-      const options = SuiteRequestOption.createForServiceApi('example-host', true);
+      const options = EscherRequestOption.createForServiceApi('example-host', true);
 
       expect(options.rejectUnauthorized).to.eql(true);
       expect(options.host).to.eql('example-host');
@@ -45,7 +52,7 @@ describe('SuiteRequestOption', function() {
 
     it('can accept additional headers', function() {
       const dummyHeader = ['header-name', 'header-value'];
-      const requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
       requestOptions.setHeader(dummyHeader);
 
@@ -53,14 +60,14 @@ describe('SuiteRequestOption', function() {
     });
 
     it('should add default content type', function() {
-      const requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
       expect(requestOptions.getHeader('content-type')).to.eql('application/json');
     });
 
     it('should not duplicate headers with same name', function() {
       const expectedContentTypeHeader = ['content-type', 'text/csv'];
-      const requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
       requestOptions.setHeader(expectedContentTypeHeader);
 
@@ -71,14 +78,14 @@ describe('SuiteRequestOption', function() {
 
   describe('allowEmptyResponse', function() {
     it('should be set to false by default', function() {
-      const requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
       expect(requestOptions.allowEmptyResponse).to.eql(false);
     });
 
     it('should be set to the value provided in config', function() {
       dummyServiceConfig.allowEmptyResponse = true;
-      const requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
       expect(requestOptions.allowEmptyResponse).to.eql(true);
     });
@@ -86,7 +93,7 @@ describe('SuiteRequestOption', function() {
 
   describe('timeout', function() {
     it('should return a default value', function() {
-      const requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
       expect(requestOptions.getTimeout()).to.be.eql(15000);
     });
@@ -94,13 +101,13 @@ describe('SuiteRequestOption', function() {
     it('should return the timeout passed in the constructor', function() {
       const options = Object.assign({}, dummyServiceConfig);
       options.timeout = 0;
-      const requestOptions = new SuiteRequestOption(dummyServiceConfig.host, options);
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, options);
 
       expect(requestOptions.getTimeout()).to.be.eql(0);
     });
 
     it('should return the timeout set by setTimeout', function() {
-      const requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
       requestOptions.setTimeout(60000);
 
@@ -112,7 +119,7 @@ describe('SuiteRequestOption', function() {
   describe('toHash', function() {
 
     it('should return the proper object', function() {
-      const requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
       expect(requestOptions.toHash()).to.be.eql({
         headers: [
@@ -131,16 +138,25 @@ describe('SuiteRequestOption', function() {
 
     it('should add allowEmptyResponse to hash if set to TRUE', function() {
       dummyServiceConfig.allowEmptyResponse = true;
-      const requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
 
       expect(requestOptions.toHash()).to.have.property('allowEmptyResponse', true);
     });
 
     it('should not cache headers', function() {
-      const requestOptions = new SuiteRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
       requestOptions.toHash().headers.push('from_test');
       expect(requestOptions.toHash().headers).not.to.include('from_test');
     });
   });
 
+  describe('setHost', () => {
+    it('should set host', () => {
+      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+
+      requestOptions.setHost('suitedocker.ett.local');
+
+      expect(requestOptions.host).to.eql('suitedocker.ett.local');
+    })
+  });
 });

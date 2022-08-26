@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 
-export class SuiteRequestError extends Error {
+export class EscherRequestError extends Error {
   code: number;
   originalCode: string | undefined;
   data: any;
@@ -10,7 +10,7 @@ export class SuiteRequestError extends Error {
 
     this.code = code;
     this.originalCode = originalCode;
-    this.name = 'SuiteRequestError';
+    this.name = 'EscherRequestError';
 
     if (response) {
       this.data = (response as AxiosResponse).data || response;

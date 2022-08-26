@@ -1,14 +1,14 @@
-const { SuiteRequestError } = require('./requestError');
+const { EscherRequestError } = require('./requestError');
 
-describe('SuiteRequestError', function() {
+describe('EscherRequestError', function() {
   it('should extend base Error class', function() {
-    const error = new SuiteRequestError();
+    const error = new EscherRequestError('Unauthorized', 401);
 
     expect(error).to.be.an.instanceOf(Error);
   });
 
   it('should store constructor parameters', function() {
-    const error = new SuiteRequestError('Invalid request', 400, {
+    const error = new EscherRequestError('Invalid request', 400, {
       data: {
         replyText: 'Too long',
         detailedMessage: 'Line too long'
@@ -25,7 +25,7 @@ describe('SuiteRequestError', function() {
   });
 
   it('should store response as is when no data attribute present', function() {
-    const error = new SuiteRequestError('Invalid request', 400, {
+    const error = new EscherRequestError('Invalid request', 400, {
       replyText: 'Too long',
       detailedMessage: 'Line too long'
     });
@@ -39,7 +39,7 @@ describe('SuiteRequestError', function() {
   });
 
   it('should always contain data on error', function() {
-    const error = new SuiteRequestError('Unauthorized');
+    const error = new EscherRequestError('Unauthorized', 401);
 
     expect(error.data).to.eql({ replyText: 'Unauthorized' });
   });

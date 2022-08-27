@@ -3,7 +3,7 @@
   "description": "Requests with Escher authentication",
   "scripts": {
     "test": "mocha --require ts-node/register ./src --recursive",
-    "lint": "eslint ./src",
+    "lint": "eslint ./src/**/*.{ts,js}",
     "build": "rm -rf dist && tsc --project ./tsconfig.json",
     "semantic-release": "CI=true semantic-release"
   },
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "18.7.8",
-    "babel-eslint": "10.1.0",
+    "@typescript-eslint/parser": "5.35.1",
     "chai": "4.3.6",
     "chai-subset": "1.6.0",
     "eslint": "7.21.0",

@@ -2,8 +2,8 @@
   "name": "@emartech/escher-request",
   "description": "Requests with Escher authentication",
   "scripts": {
-    "test": "mocha --require ts-node/register ./src/ --recursive",
-    "lint": "eslint $(find ./src -name \"*.js\" -not -path \"./node_modules/*\")",
+    "test": "mocha --require ts-node/register ./src --recursive",
+    "lint": "eslint ./src",
     "build": "rm -rf dist && tsc --project ./tsconfig.json",
     "semantic-release": "CI=true semantic-release"
   },

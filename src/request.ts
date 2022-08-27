@@ -5,7 +5,6 @@ import { EscherRequestOption } from './requestOption';
 export { EscherRequestOption } from './requestOption';
 import { RequestWrapper, ExtendedRequestOption, TransformedResponse } from './wrapper';
 export { TransformedResponse } from './wrapper';
-import { EscherRequestError } from './requestError';
 export { EscherRequestError } from './requestError';
 import { createLogger } from '@emartech/json-logger';
 const logger = createLogger('suiterequest');

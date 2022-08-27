@@ -1,6 +1,4 @@
 declare module 'escher-auth' {
-  export type KeyDB = (key: string) => string;
-
   export type EscherRequest = {
     method: string;
     host: string;
@@ -23,12 +21,17 @@ declare module 'escher-auth' {
   } & Record<string, unknown>;
 
   export default class Escher {
-    constructor(configToMerge?: Config);
+    // eslint-disable-next-line no-unused-vars
+    constructor(configToMerge: Config);
+    // eslint-disable-next-line no-unused-vars
     static create(configToMerge?: Config): Escher;
-    public preSignUrl(url: string, expirationInSec: number): string;
-    public signRequest(requestOptions: ExtendedRequestOption, body?: string | Buffer, headersToSign?: string[]): EscherRequest;
-    public authenticate(request: EscherRequest, keyDb: KeyDB, mandatorySignedHeaders?: string[]): string;
-    public validateRequest(request: EscherRequest, body?: string | Buffer): void;
-    public validateMandatorySignedHeaders(mandatorySignedHeaders?: string[]): void;
+    public signRequest(
+      // eslint-disable-next-line no-unused-vars,no-undef
+      requestOptions: ExtendedRequestOption,
+      // eslint-disable-next-line no-unused-vars
+      body?: string | Buffer,
+      // eslint-disable-next-line no-unused-vars
+      headersToSign?: string[]
+    ): EscherRequest;
   }
 }

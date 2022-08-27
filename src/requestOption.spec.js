@@ -157,6 +157,6 @@ describe('EscherRequestOption', function() {
       requestOptions.setHost('suitedocker.ett.local');
 
       expect(requestOptions.host).to.eql('suitedocker.ett.local');
-    })
+    });
   });
 });

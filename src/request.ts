@@ -42,7 +42,7 @@ export class EscherRequest {
     }
   }
 
-  public get<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
+  public get<T = any>(path: string, data?: any): Promise<TransformedResponse<T>> {
     return this.request('GET', path, data);
   }
 

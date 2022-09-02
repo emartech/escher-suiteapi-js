@@ -27,15 +27,15 @@ export class EscherRequestOption implements RequestOptions {
   keepAlive = false;
   credentialScope = '';
 
-  static createForInternalApi(host: string | RequestOptions, rejectUnauthorized: boolean) {
+  public static createForInternalApi(host: string | RequestOptions, rejectUnauthorized: boolean) {
     return this.create(host, '/api/v2/internal', rejectUnauthorized);
   }
 
-  static createForServiceApi(host: string | RequestOptions, rejectUnauthorized: boolean) {
+  public static createForServiceApi(host: string | RequestOptions, rejectUnauthorized: boolean) {
     return this.create(host, '/api/services', rejectUnauthorized);
   }
 
-  static create(host: string | RequestOptions, prefix = '', rejectUnauthorized = true) {
+  public static create(host: string | RequestOptions, prefix = '', rejectUnauthorized = true) {
     let options: RequestOptions = {};
 
     if (typeof host === 'object') {
@@ -68,32 +68,32 @@ export class EscherRequestOption implements RequestOptions {
     Object.assign(this, options);
   }
 
-  setToSecure(port: number, rejectUnauthorized: boolean) {
+  public setToSecure(port: number, rejectUnauthorized: boolean) {
     this.port = port || 443;
     this.secure = true;
     this.rejectUnauthorized = rejectUnauthorized;
   }
 
-  setToUnsecure(port: number) {
+  public setToUnsecure(port: number) {
     this.port = port || 80;
     this.secure = false;
   }
 
-  setHost(host: string) {
+  public setHost(host: string) {
     this.host = host;
   }
 
-  setPort(port: number) {
+  public setPort(port: number) {
     this.port = port;
   }
 
-  setHeader(headerToSet: string[]) {
+  public setHeader(headerToSet: string[]) {
     this.headers = this.headers
       .filter(existingHeader => existingHeader[0] !== headerToSet[0])
       .concat([headerToSet]);
   }
 
-  getHeader(name: string) {
+  public getHeader(name: string) {
     const result = this.headers.find((header) => {
       return header[0].toLowerCase() === name.toLowerCase();
     });
@@ -101,15 +101,15 @@ export class EscherRequestOption implements RequestOptions {
     return result ? result[1] : null;
   }
 
-  setTimeout(timeout: number) {
+  public setTimeout(timeout: number) {
     this.timeout = timeout;
   }
 
-  getTimeout() {
+  public getTimeout() {
     return this.timeout;
   }
 
-  toHash(): RequestOptions {
+  public toHash(): RequestOptions {
     const hash: RequestOptions = {
       port: this.port,
       host: this.host,

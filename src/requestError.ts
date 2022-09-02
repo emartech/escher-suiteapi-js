@@ -1,9 +1,9 @@
 import { AxiosResponse } from 'axios';
 
 export class EscherRequestError extends Error {
-  code: number;
-  originalCode: string | undefined;
-  data: any;
+  public code: number;
+  public originalCode: string | undefined;
+  public data: any;
 
   constructor(message: string, code: number, response?: string | AxiosResponse, originalCode?: string) {
     super(message);

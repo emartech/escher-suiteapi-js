@@ -10,19 +10,19 @@ import { createLogger } from '@emartech/json-logger';
 const logger = createLogger('suiterequest');
 
 export class EscherRequest {
-  static EscherConstants = {
+  private static EscherConstants = {
     algoPrefix: 'EMS',
     vendorKey: 'EMS',
     credentialScope: 'eu/suite/ems_request',
     authHeaderName: 'X-Ems-Auth',
     dateHeaderName: 'X-Ems-Date'
   };
-  _escher: Escher;
-  _options: EscherRequestOption;
-  httpAgent?: HttpAgent;
-  httpsAgent?: HttpsAgent;
+  private escher: Escher;
+  private options: EscherRequestOption;
+  private readonly httpAgent?: HttpAgent;
+  private readonly httpsAgent?: HttpsAgent;
 
-  static create(accessKeyId: string, apiSecret: string, requestOptions: EscherRequestOption) {
+  public static create(accessKeyId: string, apiSecret: string, requestOptions: EscherRequestOption) {
     return new EscherRequest(accessKeyId, apiSecret, requestOptions);
   }
 
@@ -33,8 +33,8 @@ export class EscherRequest {
       credentialScope: requestOptions.credentialScope || EscherRequest.EscherConstants.credentialScope
     });
 
-    this._escher = new Escher(escherConfig);
-    this._options = requestOptions;
+    this.escher = new Escher(escherConfig);
+    this.options = requestOptions;
 
     if (requestOptions.keepAlive) {
       this.httpAgent = new HttpAgent({ keepAlive: true });
@@ -42,50 +42,50 @@ export class EscherRequest {
     }
   }
 
-  get<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
-    return this._request('GET', path, data);
+  public get<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
+    return this.request('GET', path, data);
   }
 
-  patch<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
-    return this._request('PATCH', path, data);
+  public patch<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
+    return this.request('PATCH', path, data);
   }
 
-  post<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
-    return this._request('POST', path, data);
+  public post<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
+    return this.request('POST', path, data);
   }
 
-  put<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
-    return this._request('PUT', path, data);
+  public put<T = any>(path: string, data: any): Promise<TransformedResponse<T>> {
+    return this.request('PUT', path, data);
   }
 
-  delete<T = any>(path: string): Promise<TransformedResponse<T>> {
-    return this._request('DELETE', path);
+  public delete<T = any>(path: string): Promise<TransformedResponse<T>> {
+    return this.request('DELETE', path);
   }
 
-  setOptions(requestOptions: EscherRequestOption): void {
-    this._options = requestOptions;
+  public setOptions(requestOptions: EscherRequestOption): void {
+    this.options = requestOptions;
   }
 
-  getOptions(): EscherRequestOption {
-    return this._options;
+  public getOptions(): EscherRequestOption {
+    return this.options;
   }
 
-  _request(method: string, path: string, data?: any) {
-    const options = this._getOptionsFor(method, path);
-    const payload = data ? this._getPayload(data) : '';
-    const signedOptions = this._signRequest(options, payload);
+  private request(method: string, path: string, data?: any) {
+    const options = this.getOptionsFor(method, path);
+    const payload = data ? this.getPayload(data) : '';
+    const signedOptions = this.signRequest(options, payload);
 
-    logger.info('send', this._getLogParameters(options));
-    return this._getRequestFor(signedOptions, payload).send();
+    logger.info('send', this.getLogParameters(options));
+    return this.getRequestFor(signedOptions, payload).send();
   }
 
-  _getRequestFor(requestOptions: ExtendedRequestOption, payload: any) {
-    const protocol = (this._options.secure) ? 'https:' : 'http:';
+  private getRequestFor(requestOptions: ExtendedRequestOption, payload: any) {
+    const protocol = (this.options.secure) ? 'https:' : 'http:';
     return new RequestWrapper(requestOptions, protocol, payload);
   }
 
-  _getOptionsFor(method: string, path: string): ExtendedRequestOption {
-    const defaultOptions = this._options.toHash();
+  private getOptionsFor(method: string, path: string): ExtendedRequestOption {
+    const defaultOptions = this.options.toHash();
     const realPath = defaultOptions.prefix + path;
 
     return Object.assign({}, defaultOptions, {
@@ -97,21 +97,21 @@ export class EscherRequest {
     });
   }
 
-  _signRequest(options: ExtendedRequestOption, payload: any) {
+  private signRequest(options: ExtendedRequestOption, payload: any) {
     const headerNames = options.headers ? options.headers.map(function(header) {
       return header[0];
     }) : [];
 
-    return (this._escher.signRequest(options, payload, headerNames) as ExtendedRequestOption);
+    return (this.escher.signRequest(options, payload, headerNames) as ExtendedRequestOption);
   }
 
-  _getLogParameters(options: ExtendedRequestOption) {
+  private getLogParameters(options: ExtendedRequestOption) {
     const { method, host, url } = options;
     return { method, host, url };
   }
 
-  _getPayload(data: any) {
-    if (this._options?.getHeader('content-type')?.indexOf('application/json') === -1) {
+  private getPayload(data: any) {
+    if (this.options?.getHeader('content-type')?.indexOf('application/json') === -1) {
       return data;
     }
 

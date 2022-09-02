@@ -26,7 +26,7 @@ console.log(heroes);
 ### Typescript
 
 ```typescript
-const { EscherRequest, EscherRequestOption } = require('@emartech/escher-request');
+import { EscherRequest, EscherRequestOption } from '@emartech/escher-request';
 
 const options = new EscherRequestOption('example.host.com', {
   credentialScope: 'eu/service/ems_request'

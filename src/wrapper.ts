@@ -24,11 +24,11 @@ export interface TransformedResponse<T = any> {
 }
 
 export class RequestWrapper {
-  protocol: string;
-  payload: any;
-  requestOptions: ExtendedRequestOption;
+  private readonly protocol: string;
+  private readonly payload: any;
+  private readonly requestOptions: ExtendedRequestOption;
 
-  constructor(requestOptions : ExtendedRequestOption, protocol: string, payload: any = undefined) {
+  constructor(requestOptions: ExtendedRequestOption, protocol: string, payload: any = undefined) {
     this.requestOptions = requestOptions;
     this.protocol = protocol;
     this.payload = payload;
@@ -39,11 +39,11 @@ export class RequestWrapper {
     });
   }
 
-  send<T = any>(): Promise<TransformedResponse<T>> {
+  public send<T = any>(): Promise<TransformedResponse<T>> {
     const timer = logger.timer();
 
     const method = this.requestOptions.method.toLowerCase();
-    const reqOptions = this._getRequestOptions();
+    const reqOptions = this.getRequestOptions();
     const source = axios.CancelToken.source();
 
     const axiosOptions: AxiosRequestConfig = {
@@ -66,17 +66,17 @@ export class RequestWrapper {
     return axios
       .request(axiosOptions)
       .then(
-        response => this._transformResponse(response),
-        error => this._handleResponseError(error, source)
+        response => this.transformResponse(response),
+        error => this.handleResponseError(error, source)
       )
       .then((response: any) => {
-        timer.info('send', this._getLogParameters());
+        timer.info('send', this.getLogParameters());
 
-        return this._handleResponse(response);
+        return this.handleResponse(response);
       });
   }
 
-  _transformResponse(response: AxiosResponse): TransformedResponse {
+  private transformResponse(response: AxiosResponse): TransformedResponse {
     return {
       body: response.data,
       statusCode: response.status,
@@ -85,12 +85,12 @@ export class RequestWrapper {
     };
   }
 
-  _handleResponseError(error: AxiosError, source: CancelTokenSource) {
+  private handleResponseError(error: AxiosError, source: CancelTokenSource) {
     if (!axios.isCancel(error)) {
       source.cancel();
       logger.info('Canceled request');
     }
-    logger.fromError('fatal_error', error, this._getLogParameters());
+    logger.fromError('fatal_error', error, this.getLogParameters());
 
     const recoverableErrorCodes = ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'ECONNABORTED'];
     const code = recoverableErrorCodes.includes(error.code || '') ? 503 : 500;
@@ -98,44 +98,44 @@ export class RequestWrapper {
     throw new EscherRequestError(error.message, code, undefined, error.code);
   }
 
-  _handleResponse<T = any>(response: TransformedResponse): TransformedResponse<T> {
+  private handleResponse<T = any>(response: TransformedResponse): TransformedResponse<T> {
     if (response.statusCode >= 400) {
-      logger.error('server_error', this._getLogParameters({
+      logger.error('server_error', this.getLogParameters({
         code: response.statusCode,
         reply_text: response.body.replyText
       }));
       throw new EscherRequestError(
         'Error in http response (status: ' + response.statusCode + ')',
         response.statusCode,
-        this._parseBody(response)
+        this.parseBody(response)
       );
     }
 
     if (!this.requestOptions.allowEmptyResponse && !response.body) {
-      logger.error('server_error empty response data', this._getLogParameters());
+      logger.error('server_error empty response data', this.getLogParameters());
       throw new EscherRequestError('Empty http response', 500, response.statusMessage);
     }
 
     return {
-      body: this._parseBody(response),
+      body: this.parseBody(response),
       statusCode: response.statusCode,
       statusMessage: response.statusMessage,
       headers: response.headers
     };
   }
 
-  _isJsonResponse(response: TransformedResponse) {
+  private isJsonResponse(response: TransformedResponse) {
     return response.headers['content-type'] &&
       response.headers['content-type'].indexOf('application/json') !== -1;
   }
 
-  _getLogParameters(extraParametersToLog = {}) {
+  private getLogParameters(extraParametersToLog = {}) {
     const { method, host, url } = this.requestOptions;
     const requestParametersToLog = { method, host, url };
     return Object.assign({}, requestParametersToLog, extraParametersToLog);
   }
 
-  _getRequestOptions() {
+  private getRequestOptions() {
     const headers: Record<string, string> = {};
 
     if (this.requestOptions.headers) {
@@ -158,15 +158,15 @@ export class RequestWrapper {
     return reqOptions;
   }
 
-  _parseBody(response: TransformedResponse) {
-    if (!this._isJsonResponse(response)) {
+  private parseBody(response: TransformedResponse) {
+    if (!this.isJsonResponse(response)) {
       return response.body;
     }
 
     try {
       return JSON.parse(response.body);
     } catch (ex) {
-      logger.fromError('fatal_error', ex, this._getLogParameters());
+      logger.fromError('fatal_error', ex, this.getLogParameters());
       throw new EscherRequestError((ex as Error).message, 500);
     }
   }

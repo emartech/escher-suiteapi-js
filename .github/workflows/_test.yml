@@ -1,0 +1,39 @@
+name: Run tests
+
+on:
+  workflow_call:
+    inputs:
+      NODE_VERSION:
+        type: string
+        required: true
+      NODE_CACHE_KEY:
+        type: string
+        required: true
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        test: [lint, test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Load dependencies from cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ inputs.NODE_CACHE_KEY }}
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '${{ inputs.NODE_VERSION }}'
+
+      - name: Run ${{ matrix.test }} test
+        run: npm run ${{ matrix.test }}

@@ -5,7 +5,7 @@
     "test": "mocha --require ts-node/register ./src --recursive",
     "lint": "eslint ./src/**/*.{ts,js}",
     "build": "rm -rf dist && tsc --project ./tsconfig.json",
-    "semantic-release": "CI=true semantic-release"
+    "release": "CI=true semantic-release"
   },
   "publishConfig": {
     "access": "public"

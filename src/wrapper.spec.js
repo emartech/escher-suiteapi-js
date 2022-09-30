@@ -1,9 +1,11 @@
 const axios = require('axios');
+const http = require('http');
+const https = require('https');
+const sinon = require('sinon');
+const { expect } = require('chai');
 const { RequestWrapper } = require('./wrapper');
 const { EscherRequestError } = require('./requestError');
 const { EscherRequestOption } = require('./requestOption');
-const http = require('http');
-const https = require('https');
 
 describe('RequestWrapper', function() {
   let apiResponse;
@@ -56,13 +58,13 @@ describe('RequestWrapper', function() {
     let source;
 
     beforeEach(function() {
-      requestGetStub = this.sandbox.stub(axios, 'request');
+      requestGetStub = sinon.stub(axios, 'request');
       requestGetStub.resolves(apiResponse);
       source = {
         token: 'source-token',
-        cancel: this.sandbox.stub()
+        cancel: sinon.stub()
       };
-      this.sandbox.stub(axios.CancelToken, 'source').returns(source);
+      sinon.stub(axios.CancelToken, 'source').returns(source);
 
       wrapper = new RequestWrapper(escherRequestOptions, 'http:');
     });
@@ -197,7 +199,7 @@ describe('RequestWrapper', function() {
           message: 'axios error message',
           stack: []
         };
-        isCancel = this.sandbox.stub(axios, 'isCancel');
+        isCancel = sinon.stub(axios, 'isCancel');
         requestGetStub.rejects(axiosError);
       });
 

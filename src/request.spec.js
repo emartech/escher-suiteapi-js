@@ -1,8 +1,10 @@
-const { EscherRequest, EscherRequestOption } = require('./request');
+const sinon = require('sinon');
+const { expect } = require('chai');
 const axios = require('axios');
 const Escher = require('escher-auth');
 const http = require('http');
 const https = require('https');
+const { EscherRequest, EscherRequestOption } = require('./request');
 
 describe('EscherRequest', function() {
   const serviceConfig = {
@@ -27,7 +29,7 @@ describe('EscherRequest', function() {
 
   beforeEach(function() {
     requestOptions = new EscherRequestOption(serviceConfig.host, serviceConfig);
-    requestStub = this.sandbox.stub(axios, 'request').resolves(createDummyResponse());
+    requestStub = sinon.stub(axios, 'request').resolves(createDummyResponse());
     escherRequest = EscherRequest.create('key-id', 'secret', requestOptions);
   });
 
@@ -126,7 +128,7 @@ describe('EscherRequest', function() {
 
   it('should sign the payload of PATCH request', async function() {
     const payload = { name: 'Test' };
-    this.sandbox.spy(Escher.prototype, 'signRequest');
+    sinon.spy(Escher.prototype, 'signRequest');
 
     await escherRequest.patch('/path', payload);
 
@@ -137,7 +139,7 @@ describe('EscherRequest', function() {
 
   it('should sign the payload of POST request', async function() {
     const payload = { name: 'Test' };
-    this.sandbox.spy(Escher.prototype, 'signRequest');
+    sinon.spy(Escher.prototype, 'signRequest');
 
     await escherRequest.post('/path', payload);
 
@@ -148,7 +150,7 @@ describe('EscherRequest', function() {
 
   it('should sign the payload of GET request', async function() {
     const payload = { name: 'Test' };
-    this.sandbox.spy(Escher.prototype, 'signRequest');
+    sinon.spy(Escher.prototype, 'signRequest');
 
     await escherRequest.get('/path', payload);
 

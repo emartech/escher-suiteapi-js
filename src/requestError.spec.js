@@ -1,3 +1,4 @@
+const { expect } = require('chai');
 const { EscherRequestError } = require('./requestError');
 
 describe('EscherRequestError', function() {

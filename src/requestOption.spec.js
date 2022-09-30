@@ -1,3 +1,4 @@
+const { expect } = require('chai');
 const { EscherRequestOption } = require('./requestOption');
 
 describe('EscherRequestOption', function() {

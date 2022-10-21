@@ -1,6 +1,13 @@
 import { EscherRequestError } from './requestError';
 import { RequestOptions } from './requestOption';
-import { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders, CancelTokenSource } from 'axios';
+import {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  AxiosResponseHeaders,
+  CancelTokenSource,
+  RawAxiosResponseHeaders
+} from 'axios';
 import { Agent as HttpAgent } from 'http';
 import { Agent as HttpsAgent } from 'https';
 import axios from 'axios';
@@ -20,7 +27,7 @@ export interface TransformedResponse<T = any> {
   body: T,
   statusCode: number;
   statusMessage: string;
-  headers: AxiosResponseHeaders
+  headers: RawAxiosResponseHeaders | AxiosResponseHeaders
 }
 
 export class RequestWrapper {

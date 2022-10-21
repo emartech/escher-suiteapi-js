@@ -1,17 +1,18 @@
-const axios = require('axios');
-const http = require('http');
-const https = require('https');
-const sinon = require('sinon');
-const { expect } = require('chai');
-const { RequestWrapper } = require('./wrapper');
-const { EscherRequestError } = require('./requestError');
-const { EscherRequestOption } = require('./requestOption');
+import axios, { CancelToken } from 'axios';
+import http from 'http';
+import https from 'https';
+import sinon, { SinonStub } from 'sinon';
+import { expect } from 'chai';
+import { ExtendedRequestOption, RequestWrapper } from './wrapper';
+import { EscherRequestError } from './requestError';
+import { AxiosRequestConfig } from 'axios';
 
 describe('RequestWrapper', function() {
-  let apiResponse;
-  let expectedApiResponse;
-  let escherRequestOptions;
-  let expectedRequestOptions;
+  let apiResponse: any;
+  let expectedApiResponse: any;
+  let extendedRequestOptions: ExtendedRequestOption;
+  let expectedRequestOptions: AxiosRequestConfig;
+  let cancelToken: CancelToken;
 
   beforeEach(function() {
     apiResponse = {
@@ -28,15 +29,29 @@ describe('RequestWrapper', function() {
       statusMessage: 'OK'
     };
 
-    escherRequestOptions = new EscherRequestOption('very.host.io', {
+    extendedRequestOptions = {
+      secure: true,
       port: 443,
+      host: 'very.host.io',
+      rejectUnauthorized: true,
       headers: [
         ['content-type', 'very-format'],
         ['x-custom', 'alma']
       ],
+      prefix: '',
+      timeout: 15000,
+      allowEmptyResponse: false,
+      maxContentLength: 10485760,
+      keepAlive: false,
+      credentialScope: '',
       method: 'GET',
+      url: 'http://very.host.io:443/purchases/1/content',
       path: '/purchases/1/content'
-    });
+    };
+
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    cancelToken = source.token;
 
     expectedRequestOptions = {
       method: 'get',
@@ -48,25 +63,25 @@ describe('RequestWrapper', function() {
       },
       timeout: 15000,
       maxContentLength: 10485760,
-      cancelToken: 'source-token'
+      cancelToken: cancelToken
     };
   });
 
   describe('request handling', function() {
-    let wrapper;
-    let requestGetStub;
-    let source;
+    let wrapper: RequestWrapper;
+    let requestGetStub: SinonStub;
+    let source: any;
 
     beforeEach(function() {
       requestGetStub = sinon.stub(axios, 'request');
       requestGetStub.resolves(apiResponse);
       source = {
-        token: 'source-token',
+        token: cancelToken,
         cancel: sinon.stub()
       };
       sinon.stub(axios.CancelToken, 'source').returns(source);
 
-      wrapper = new RequestWrapper(escherRequestOptions, 'http:');
+      wrapper = new RequestWrapper(extendedRequestOptions, 'http:');
     });
 
     it('should send GET request and return its response', async () => {
@@ -85,7 +100,7 @@ describe('RequestWrapper', function() {
         httpsAgent: new https.Agent({ keepAlive: true })
       };
       wrapper = new RequestWrapper(
-        Object.assign(agents, escherRequestOptions),
+        Object.assign(agents, extendedRequestOptions),
         'http:'
       );
 
@@ -104,17 +119,18 @@ describe('RequestWrapper', function() {
         await wrapper.send();
         throw new Error('Error should have been thrown');
       } catch (err) {
-        expect(err).to.be.an.instanceof(EscherRequestError);
-        expect(err.message).to.eql('Error in http response (status: 400)');
-        expect(err.code).to.eql(400);
-        expect(err.data).to.eql({ replyText: 'Unknown route' });
+        const error = err as EscherRequestError;
+        expect(error).to.be.an.instanceof(EscherRequestError);
+        expect(error.message).to.eql('Error in http response (status: 400)');
+        expect(error.code).to.eql(400);
+        expect(error.data).to.eql({ replyText: 'Unknown route' });
       }
     });
 
     describe('when empty response is allowed', function() {
       beforeEach(function() {
-        escherRequestOptions.allowEmptyResponse = true;
-        wrapper = new RequestWrapper(escherRequestOptions, 'http:');
+        extendedRequestOptions.allowEmptyResponse = true;
+        wrapper = new RequestWrapper(extendedRequestOptions, 'http:');
       });
 
 
@@ -135,9 +151,10 @@ describe('RequestWrapper', function() {
         try {
           await wrapper.send();
         } catch (err) {
-          expect(err).to.be.an.instanceof(EscherRequestError);
-          expect(err.message).to.match(/Unexpected end/);
-          expect(err.code).to.eql(500);
+          const error = err as EscherRequestError;
+          expect(error).to.be.an.instanceof(EscherRequestError);
+          expect(error.message).to.match(/Unexpected end/);
+          expect(error.code).to.eql(500);
           return;
         }
         throw new Error('Error should have been thrown');
@@ -151,10 +168,11 @@ describe('RequestWrapper', function() {
         try {
           await wrapper.send();
         } catch (err) {
-          expect(err).to.be.an.instanceof(EscherRequestError);
-          expect(err.message).to.eql('Empty http response');
-          expect(err.code).to.eql(500);
-          expect(err.data).to.eql(expectedApiResponse.statusMessage);
+          const error = err as EscherRequestError;
+          expect(error).to.be.an.instanceof(EscherRequestError);
+          expect(error.message).to.eql('Empty http response');
+          expect(error.code).to.eql(500);
+          expect(error.data).to.eql(expectedApiResponse.statusMessage);
           return;
         }
         throw new Error('Error should have been thrown');
@@ -167,7 +185,8 @@ describe('RequestWrapper', function() {
         try {
           await wrapper.send();
         } catch (err) {
-          expect(err.data).to.eql(apiResponse.statusText);
+          const error = err as EscherRequestError;
+          expect(error.data).to.eql(apiResponse.statusText);
           return;
         }
         throw new Error('Error should have been thrown');
@@ -182,17 +201,18 @@ describe('RequestWrapper', function() {
           await wrapper.send();
           throw new Error('should throw');
         } catch (err) {
-          expect(err).to.be.an.instanceOf(EscherRequestError);
-          expect(err.code).to.eql(apiResponse.status);
-          expect(err.message).to.eql('Error in http response (status: 404)');
-          expect(err.data).to.eql(apiResponse.data);
+          const error = err as EscherRequestError;
+          expect(error).to.be.an.instanceOf(EscherRequestError);
+          expect(error.code).to.eql(apiResponse.status);
+          expect(error.message).to.eql('Error in http response (status: 404)');
+          expect(error.data).to.eql(apiResponse.data);
         }
       });
     });
 
     describe('when there was an axios error', function() {
-      let isCancel;
-      let axiosError;
+      let isCancel: any;
+      let axiosError: any;
 
       beforeEach(function() {
         axiosError = {
@@ -240,9 +260,10 @@ describe('RequestWrapper', function() {
           await wrapper.send();
           throw new Error('should throw SuiteRequestError');
         } catch (err) {
-          expect(err.originalCode).to.eql('ECONNABORTED');
-          expect(err.code).to.eql(503);
-          expect(err.data).to.eql({ replyText: 'axios error message' });
+          const error = err as EscherRequestError;
+          expect(error.originalCode).to.eql('ECONNABORTED');
+          expect(error.code).to.eql(503);
+          expect(error.data).to.eql({ replyText: 'axios error message' });
         }
       });
     });
@@ -254,9 +275,10 @@ describe('RequestWrapper', function() {
       try {
         await wrapper.send();
       } catch (err) {
-        expect(err).to.be.an.instanceof(EscherRequestError);
-        expect(err.message).to.match(/Unexpected token/);
-        expect(err.code).to.eql(500);
+        const error = err as EscherRequestError;
+        expect(error).to.be.an.instanceof(EscherRequestError);
+        expect(error.message).to.match(/Unexpected token/);
+        expect(error.code).to.eql(500);
         return;
       }
       throw new Error('Error should have been thrown');
@@ -273,11 +295,11 @@ describe('RequestWrapper', function() {
     });
 
     it('should send GET request with given timeout in options', async () => {
-      escherRequestOptions.timeout = 60000;
-      await (new RequestWrapper(escherRequestOptions, 'http:')).send();
+      extendedRequestOptions.timeout = 60000;
+      await (new RequestWrapper(extendedRequestOptions, 'http:')).send();
 
       const requestArgument = requestGetStub.args[0][0];
-      expect(requestArgument.timeout).to.eql(escherRequestOptions.timeout);
+      expect(requestArgument.timeout).to.eql(extendedRequestOptions.timeout);
     });
   });
 });

@@ -1,10 +1,10 @@
-const sinon = require('sinon');
-const { expect } = require('chai');
-const axios = require('axios');
+import sinon, { SinonStub } from 'sinon';
+import { expect } from 'chai';
+import axios from 'axios';
 const Escher = require('escher-auth');
-const http = require('http');
-const https = require('https');
-const { EscherRequest, EscherRequestOption } = require('./request');
+import http from 'http';
+import https from 'https';
+import { EscherRequest, EscherRequestOption } from './request';
 
 describe('EscherRequest', function() {
   const serviceConfig = {
@@ -23,9 +23,9 @@ describe('EscherRequest', function() {
     };
   };
 
-  let requestOptions;
-  let requestStub;
-  let escherRequest;
+  let requestOptions: EscherRequestOption;
+  let requestStub: SinonStub;
+  let escherRequest: EscherRequest;
 
   beforeEach(function() {
     requestOptions = new EscherRequestOption(serviceConfig.host, serviceConfig);
@@ -62,7 +62,7 @@ describe('EscherRequest', function() {
   });
 
   it('should sign headers with non string values', async () => {
-    requestOptions.setHeader(['x-customer-id', 15]);
+    requestOptions.setHeader(['x-customer-id', '15']);
 
     await escherRequest.post('/path', { name: 'Almanach' });
 

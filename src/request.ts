@@ -1,4 +1,4 @@
-import Escher from 'escher-auth';
+const Escher = require('escher-auth');
 import { Agent as HttpAgent } from 'http';
 import { Agent as HttpsAgent } from 'https';
 import { EscherRequestOption } from './requestOption';
@@ -17,10 +17,10 @@ export class EscherRequest {
     authHeaderName: 'X-Ems-Auth',
     dateHeaderName: 'X-Ems-Date'
   };
-  private escher: Escher;
+  private escher: any;
   private options: EscherRequestOption;
-  private readonly httpAgent?: HttpAgent;
-  private readonly httpsAgent?: HttpsAgent;
+  public readonly httpAgent?: HttpAgent;
+  public readonly httpsAgent?: HttpsAgent;
 
   public static create(accessKeyId: string, apiSecret: string, requestOptions: EscherRequestOption) {
     return new EscherRequest(accessKeyId, apiSecret, requestOptions);

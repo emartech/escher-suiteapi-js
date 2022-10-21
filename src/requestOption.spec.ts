@@ -1,8 +1,9 @@
-const { expect } = require('chai');
-const { EscherRequestOption } = require('./requestOption');
+import { expect } from 'chai';
+import { EscherRequestOption, RequestOptions } from './requestOption';
 
 describe('EscherRequestOption', function() {
-  let dummyServiceConfig;
+  let dummyServiceConfig: RequestOptions;
+  const host = 'localhost';
 
   beforeEach(function() {
     dummyServiceConfig = {
@@ -53,7 +54,7 @@ describe('EscherRequestOption', function() {
 
     it('can accept additional headers', function() {
       const dummyHeader = ['header-name', 'header-value'];
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(host, dummyServiceConfig);
 
       requestOptions.setHeader(dummyHeader);
 
@@ -61,14 +62,14 @@ describe('EscherRequestOption', function() {
     });
 
     it('should add default content type', function() {
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(host, dummyServiceConfig);
 
       expect(requestOptions.getHeader('content-type')).to.eql('application/json');
     });
 
     it('should not duplicate headers with same name', function() {
       const expectedContentTypeHeader = ['content-type', 'text/csv'];
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(host, dummyServiceConfig);
 
       requestOptions.setHeader(expectedContentTypeHeader);
 
@@ -79,14 +80,14 @@ describe('EscherRequestOption', function() {
 
   describe('allowEmptyResponse', function() {
     it('should be set to false by default', function() {
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(host, dummyServiceConfig);
 
       expect(requestOptions.allowEmptyResponse).to.eql(false);
     });
 
     it('should be set to the value provided in config', function() {
       dummyServiceConfig.allowEmptyResponse = true;
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(host, dummyServiceConfig);
 
       expect(requestOptions.allowEmptyResponse).to.eql(true);
     });
@@ -94,7 +95,7 @@ describe('EscherRequestOption', function() {
 
   describe('timeout', function() {
     it('should return a default value', function() {
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(host, dummyServiceConfig);
 
       expect(requestOptions.getTimeout()).to.be.eql(15000);
     });
@@ -102,13 +103,13 @@ describe('EscherRequestOption', function() {
     it('should return the timeout passed in the constructor', function() {
       const options = Object.assign({}, dummyServiceConfig);
       options.timeout = 0;
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, options);
+      const requestOptions = new EscherRequestOption(host, options);
 
       expect(requestOptions.getTimeout()).to.be.eql(0);
     });
 
     it('should return the timeout set by setTimeout', function() {
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(host, dummyServiceConfig);
 
       requestOptions.setTimeout(60000);
 
@@ -120,7 +121,7 @@ describe('EscherRequestOption', function() {
   describe('toHash', function() {
 
     it('should return the proper object', function() {
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(host, dummyServiceConfig);
 
       expect(requestOptions.toHash()).to.be.eql({
         headers: [
@@ -139,21 +140,22 @@ describe('EscherRequestOption', function() {
 
     it('should add allowEmptyResponse to hash if set to TRUE', function() {
       dummyServiceConfig.allowEmptyResponse = true;
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(host, dummyServiceConfig);
 
       expect(requestOptions.toHash()).to.have.property('allowEmptyResponse', true);
     });
 
     it('should not cache headers', function() {
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
-      requestOptions.toHash().headers.push('from_test');
-      expect(requestOptions.toHash().headers).not.to.include('from_test');
+      const requestOptions = new EscherRequestOption(host, dummyServiceConfig);
+      const headers = requestOptions.toHash().headers as string[][];
+      headers.push(['from_test']);
+      expect(requestOptions.toHash().headers).not.to.include(['from_test']);
     });
   });
 
   describe('setHost', () => {
     it('should set host', () => {
-      const requestOptions = new EscherRequestOption(dummyServiceConfig.host, dummyServiceConfig);
+      const requestOptions = new EscherRequestOption(host, dummyServiceConfig);
 
       requestOptions.setHost('suitedocker.ett.local');
 

@@ -29,7 +29,9 @@ describe('EscherRequest', function() {
 
   beforeEach(function() {
     requestOptions = new EscherRequestOption(serviceConfig.host, serviceConfig);
-    requestStub = sinon.stub(axios, 'request').resolves(createDummyResponse());
+    const instanceStub = axios.create();
+    sinon.stub(axios, 'create').returns(instanceStub);
+    requestStub = sinon.stub(instanceStub, 'request').resolves(createDummyResponse());
     escherRequest = EscherRequest.create('key-id', 'secret', requestOptions);
   });
 

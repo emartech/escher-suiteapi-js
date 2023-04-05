@@ -73,7 +73,9 @@ describe('RequestWrapper', function() {
     let source: any;
 
     beforeEach(function() {
-      requestGetStub = sinon.stub(axios, 'request');
+      const instanceStub = axios.create();
+      sinon.stub(axios, 'create').returns(instanceStub);
+      requestGetStub = sinon.stub(instanceStub, 'request');
       requestGetStub.resolves(apiResponse);
       source = {
         token: cancelToken,

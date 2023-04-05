@@ -70,7 +70,9 @@ export class RequestWrapper {
       axiosOptions.httpsAgent = this.requestOptions.httpsAgent;
     }
 
-    return axios
+    const client = axios.create();
+
+    return client
       .request(axiosOptions)
       .then(
         response => this.transformResponse(response),

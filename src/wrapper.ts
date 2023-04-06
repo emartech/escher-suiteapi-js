@@ -35,7 +35,11 @@ export class RequestWrapper {
   private readonly payload: any;
   private readonly requestOptions: ExtendedRequestOption;
 
-  constructor(requestOptions: ExtendedRequestOption, protocol: string, payload: any = undefined) {
+  constructor(
+    requestOptions: ExtendedRequestOption,
+    protocol: string,
+    payload: any = undefined,
+  ) {
     this.requestOptions = requestOptions;
     this.protocol = protocol;
     this.payload = payload;
@@ -61,7 +65,6 @@ export class RequestWrapper {
       timeout: reqOptions.timeout,
       transformResponse: [body => body],
       maxContentLength: this.requestOptions.maxContentLength,
-      validateStatus: () => true,
       cancelToken: source.token
     };
 
@@ -95,31 +98,31 @@ export class RequestWrapper {
   }
 
   private handleResponseError(error: AxiosError, source: CancelTokenSource) {
-    if (!axios.isCancel(error)) {
-      source.cancel();
-      logger.info('Canceled request');
+    if (error.response?.status) {
+      logger.error('server_error', this.getLogParameters({
+        code: error.response.status,
+        reply_text: (error.response?.data || '')
+      }));
+      throw new EscherRequestError(
+        'Error in http response (status: ' + error.response.status + ')',
+        error.response.status,
+        (error.response?.data || '') as string
+      );
+    } else {
+      if (!axios.isCancel(error)) {
+        source.cancel();
+        logger.info('Canceled request');
+      }
+      logger.fromError('fatal_error', error, this.getLogParameters());
+
+      const recoverableErrorCodes = ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'ECONNABORTED'];
+      const code = recoverableErrorCodes.includes(error.code || '') ? 503 : 500;
+
+      throw new EscherRequestError(error.message, code, undefined, error.code);
     }
-    logger.fromError('fatal_error', error, this.getLogParameters());
-
-    const recoverableErrorCodes = ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'ECONNABORTED'];
-    const code = recoverableErrorCodes.includes(error.code || '') ? 503 : 500;
-
-    throw new EscherRequestError(error.message, code, undefined, error.code);
   }
 
   private handleResponse<T = any>(response: TransformedResponse): TransformedResponse<T> {
-    if (response.statusCode >= 400) {
-      logger.error('server_error', this.getLogParameters({
-        code: response.statusCode,
-        reply_text: response.body.replyText
-      }));
-      throw new EscherRequestError(
-        'Error in http response (status: ' + response.statusCode + ')',
-        response.statusCode,
-        this.parseBody(response)
-      );
-    }
-
     if (!this.requestOptions.allowEmptyResponse && !response.body) {
       logger.error('server_error empty response data', this.getLogParameters());
       throw new EscherRequestError('Empty http response', 500, response.statusMessage);

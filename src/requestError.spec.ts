@@ -13,6 +13,7 @@ describe('EscherRequestError', function() {
       status: 200,
       statusText: 'OK',
       headers: {},
+      // @ts-ignore
       config: {},
       data: {
         replyText: 'Too long',

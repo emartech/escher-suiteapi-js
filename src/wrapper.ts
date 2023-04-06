@@ -12,6 +12,7 @@ import { Agent as HttpAgent } from 'http';
 import { Agent as HttpsAgent } from 'https';
 import axios from 'axios';
 import { createLogger } from '@emartech/json-logger';
+import axiosRetry from 'axios-retry';
 const logger = createLogger('suiterequest');
 const debugLogger = createLogger('suiterequest-debug');
 
@@ -54,6 +55,7 @@ export class RequestWrapper {
     const timer = logger.timer();
 
     const method = this.requestOptions.method.toLowerCase();
+    const retryConfig = this.requestOptions.retryConfig;
     const reqOptions = this.getRequestOptions();
     const source = axios.CancelToken.source();
 
@@ -74,6 +76,10 @@ export class RequestWrapper {
     }
 
     const client = axios.create();
+
+    if (retryConfig) {
+      axiosRetry(client, retryConfig);
+    }
 
     return client
       .request(axiosOptions)

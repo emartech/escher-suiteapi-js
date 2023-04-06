@@ -133,7 +133,8 @@ describe('EscherRequestOption', function() {
         prefix: '/api',
         rejectUnauthorized: false,
         timeout: 15000,
-        maxContentLength: 10485760
+        maxContentLength: 10485760,
+        retryConfig: null
       });
       expect(requestOptions.toHash()).to.not.have.property('allowEmptyResponse');
     });

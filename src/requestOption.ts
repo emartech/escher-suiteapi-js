@@ -1,3 +1,5 @@
+import { IAxiosRetryConfig } from 'axios-retry';
+
 const MEGA_BYTE = 1024 * 1024;
 
 export interface RequestOptions {
@@ -12,6 +14,7 @@ export interface RequestOptions {
   maxContentLength?: number;
   keepAlive?: boolean;
   credentialScope?: string;
+  retryConfig?: IAxiosRetryConfig | null;
 }
 
 export class EscherRequestOption implements RequestOptions {
@@ -26,6 +29,7 @@ export class EscherRequestOption implements RequestOptions {
   maxContentLength = 10 * MEGA_BYTE;
   keepAlive = false;
   credentialScope = '';
+  retryConfig: IAxiosRetryConfig | null = null;
 
   public static createForInternalApi(host: string | RequestOptions, rejectUnauthorized: boolean) {
     return this.create(host, '/api/v2/internal', rejectUnauthorized);
@@ -60,6 +64,7 @@ export class EscherRequestOption implements RequestOptions {
     this.allowEmptyResponse = false;
     this.maxContentLength = options.maxContentLength || 10 * MEGA_BYTE;
     this.keepAlive = !!options.keepAlive;
+    this.retryConfig = options.retryConfig || null;
 
     if (!options) {
       options = {};
@@ -116,7 +121,8 @@ export class EscherRequestOption implements RequestOptions {
       headers: this.headers.slice(0),
       prefix: this.prefix,
       timeout: this.timeout,
-      maxContentLength: this.maxContentLength
+      maxContentLength: this.maxContentLength,
+      retryConfig: this.retryConfig
     };
 
     if (!this.rejectUnauthorized) {

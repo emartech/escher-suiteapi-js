@@ -5,6 +5,8 @@ const Escher = require('escher-auth');
 import http from 'http';
 import https from 'https';
 import { EscherRequest, EscherRequestOption } from './request';
+import nock from 'nock';
+import { IAxiosRetryConfig } from 'axios-retry';
 
 describe('EscherRequest', function() {
   const serviceConfig = {
@@ -33,6 +35,10 @@ describe('EscherRequest', function() {
     sinon.stub(axios, 'create').returns(instanceStub);
     requestStub = sinon.stub(instanceStub, 'request').resolves(createDummyResponse());
     escherRequest = EscherRequest.create('key-id', 'secret', requestOptions);
+  });
+
+  afterEach(() => {
+    nock.cleanAll();
   });
 
   it('should sign headers of GET request', async () => {
@@ -186,5 +192,22 @@ describe('EscherRequest', function() {
     const requestArgument = requestStub.args[0][0];
     expect(requestArgument.httpAgent).to.eql(escherRequest.httpAgent);
     expect(requestArgument.httpsAgent).to.eql(escherRequest.httpsAgent);
+  });
+
+  it('should retry the request if retryConfig exists', async () => {
+    requestStub.restore();
+    nock('https://localhost:1234')
+      .get('/api/purchases/1/content').times(1)
+      .reply(500)
+      .get('/api/purchases/1/content')
+      .reply(200, { data: 1 }, { 'content-type': 'application/json' },);
+    const retryConfig: IAxiosRetryConfig = { retries: 1 };
+    requestOptions = new EscherRequestOption(serviceConfig.host, { ...serviceConfig, retryConfig });
+    escherRequest = EscherRequest.create('key-id', 'secret', requestOptions);
+
+    const response = await escherRequest.get('/purchases/1/content');
+
+    expect(response.statusCode).to.eql(200);
+    expect(response.body).to.eql({ data: 1 });
   });
 });

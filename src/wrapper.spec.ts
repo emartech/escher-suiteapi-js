@@ -7,8 +7,12 @@ import { ExtendedRequestOption, RequestWrapper } from './wrapper';
 import { EscherRequestError } from './requestError';
 import { AxiosRequestConfig } from 'axios';
 import nock from 'nock';
+import { IAxiosRetryConfig } from 'axios-retry';
 
 describe('RequestWrapper', function() {
+  afterEach(() => {
+    nock.cleanAll();
+  });
   describe('functionality tests', () => {
     let apiResponse: any;
     let expectedApiResponse: any;
@@ -308,6 +312,55 @@ describe('RequestWrapper', function() {
         const requestArgument = requestGetStub.args[0][0];
         expect(requestArgument.timeout).to.eql(extendedRequestOptions.timeout);
       });
+    });
+  });
+  describe('retry test', () => {
+    const requestOptions = {
+      secure: true,
+      port: 443,
+      host: 'very.host.io',
+      method: 'get',
+      url: 'http://very.host.io:443/purchases/1/content',
+      path: '/purchases/1/content'
+    };
+
+    it('should not retry if error code is below 500', async () => {
+      nock('http://very.host.io:443')
+        .get('/purchases/1/content').times(1)
+        .reply(404, { replyText: '404 Not Found' })
+        .get('/purchases/1/content')
+        .reply(200, { data: 1 }, { 'content-type': 'application/json' },);
+      const retryConfig: IAxiosRetryConfig = { retries: 1 };
+      const wrapper = new RequestWrapper({ ...requestOptions, retryConfig }, 'http:', undefined);
+
+      try {
+        await wrapper.send();
+      } catch (err) {
+        const error = err as EscherRequestError;
+        expect(error).to.be.an.instanceOf(EscherRequestError);
+        expect(error.code).to.eql(404);
+        expect(error.message).to.eql('Error in http response (status: 404)');
+        expect(error.data).to.eql(JSON.stringify({ replyText: '404 Not Found' }));
+      }
+    });
+
+    it('should send the request with the correct retry', async () => {
+      nock('http://very.host.io:443')
+        .get('/purchases/1/content').times(1)
+        .reply(500)
+        .get('/purchases/1/content')
+        .reply(200, { data: 1 }, { 'content-type': 'application/json' },);
+      const expectedApiResponse = {
+        headers: { 'content-type': 'application/json' },
+        body: { data: 1 },
+        statusCode: 200
+      };
+      const retryConfig: IAxiosRetryConfig = { retries: 1 };
+      const wrapper = new RequestWrapper({ ...requestOptions, retryConfig }, 'http:', undefined);
+
+      const response = await wrapper.send();
+
+      expect(response).to.containSubset(expectedApiResponse);
     });
   });
 });

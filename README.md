@@ -43,3 +43,16 @@ const heroes = await request.post<{ name: string; }[]>('/heroes', {
 });
 console.log(heroes);
 ```
+
+### Retry
+
+You can specify an optional retry config in the constructor of the EscherRequestOption's second parameter:
+```typescript
+const options = new EscherRequestOption('example.host.com', {
+  credentialScope: 'eu/service/ems_request',
+  retryConfig: {
+      retries: 5
+  }
+});
+```
+The type of the `retryConfig` property is `IAxiosRetryConfig`, you can find the detailed list of available parameters here: https://github.com/softonic/axios-retry#options

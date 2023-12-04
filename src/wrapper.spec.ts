@@ -119,23 +119,44 @@ describe('RequestWrapper', function() {
         expect(requestArgument.httpsAgent).to.eql(agents.httpsAgent);
       });
 
-      it('should throw error when response code is 400 or above', async () => {
-        requestGetStub.restore();
-        nock('http://very.host.io:443')
-          .get('/purchases/1/content')
-          .reply(400, { replyText: 'Unknown route' });
+      context('error responses', () => {
+        it('should return JSON in EscherRequestError if response data is json parsable', async () => {
+          requestGetStub.restore();
+          nock('http://very.host.io:443')
+            .get('/purchases/1/content')
+            .reply(400, { replyText: 'Unknown route' }, { 'Content-Type': 'application/json; charset=utf-8' });
 
-        try {
-          await wrapper.send();
-          throw new Error('Error should have been thrown');
-        } catch (err) {
-          const error = err as EscherRequestError;
-          expect(error).to.be.an.instanceof(EscherRequestError);
-          expect(error.message).to.eql('Error in http response (status: 400)');
-          expect(error.code).to.eql(400);
-          expect(error.data).to.eql(JSON.stringify({ replyText: 'Unknown route' }));
-        }
+          try {
+            await wrapper.send();
+            throw new Error('Error should have been thrown');
+          } catch (err) {
+            const error = err as EscherRequestError;
+            expect(error).to.be.an.instanceof(EscherRequestError);
+            expect(error.message).to.eql('Error in http response (status: 400)');
+            expect(error.code).to.eql(400);
+            expect(error.data).to.eql({ replyText: 'Unknown route' });
+          }
+        });
+
+        it('should return text and not fail parsing response data if wrong content-type headers are set', async () => {
+          requestGetStub.restore();
+          nock('http://very.host.io:443')
+            .get('/purchases/1/content')
+            .reply(500, 'Unexpected Error', { 'Content-Type': 'application/json; charset=utf-8' });
+
+          try {
+            await wrapper.send();
+            throw new Error('Error should have been thrown');
+          } catch (err) {
+            const error = err as EscherRequestError;
+            expect(error).to.be.an.instanceof(EscherRequestError);
+            expect(error.message).to.eql('Error in http response (status: 500)');
+            expect(error.code).to.eql(500);
+            expect(error.data).to.eql('Unexpected Error');
+          }
+        });
       });
+
 
       describe('when empty response is allowed', function() {
         beforeEach(function() {
@@ -216,7 +237,7 @@ describe('RequestWrapper', function() {
             expect(error).to.be.an.instanceOf(EscherRequestError);
             expect(error.code).to.eql(404);
             expect(error.message).to.eql('Error in http response (status: 404)');
-            expect(error.data).to.eql(JSON.stringify({ replyText: '404 Not Found' }));
+            expect(error.data).to.eql({ replyText: '404 Not Found' });
           }
         });
       });
@@ -340,7 +361,7 @@ describe('RequestWrapper', function() {
         expect(error).to.be.an.instanceOf(EscherRequestError);
         expect(error.code).to.eql(404);
         expect(error.message).to.eql('Error in http response (status: 404)');
-        expect(error.data).to.eql(JSON.stringify({ replyText: '404 Not Found' }));
+        expect(error.data).to.eql({ replyText: '404 Not Found' });
       }
     });
 

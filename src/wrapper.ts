@@ -109,10 +109,22 @@ export class RequestWrapper {
         code: error.response.status,
         reply_text: (error.response?.data || '')
       }));
+      let data = '';
+      if (error.response != null &&
+          this.isJsonResponse(error.response) &&
+            error.response.data != null &&
+            typeof error.response.data === 'string') {
+        try {
+          data = JSON.parse(error.response.data);
+        } catch (_) {
+          data = error.response.data;
+        }
+      }
+
       throw new EscherRequestError(
         'Error in http response (status: ' + error.response.status + ')',
         error.response.status,
-        (error.response?.data || '') as string
+        data
       );
     } else {
       if (!axios.isCancel(error)) {
@@ -142,7 +154,7 @@ export class RequestWrapper {
     };
   }
 
-  private isJsonResponse(response: TransformedResponse) {
+  private isJsonResponse<T extends TransformedResponse | AxiosResponse>(response: T) {
     return response.headers['content-type'] &&
       response.headers['content-type'].indexOf('application/json') !== -1;
   }

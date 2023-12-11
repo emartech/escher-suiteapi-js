@@ -155,16 +155,8 @@ export class RequestWrapper {
   }
 
   private isJsonResponse<T extends TransformedResponse | AxiosResponse>(response: T) {
-    let headers: RawAxiosResponseHeaders | AxiosResponseHeaders = {};
-    Object.assign(headers, response.headers);
-    headers = Object.entries(response.headers)
-      .reduce((acc: RawAxiosResponseHeaders | AxiosResponseHeaders, [key, val]) => {
-        acc[key.toLowerCase()] = val.toLowerCase();
-        return acc;
-      }, ({}));
-
-    return headers['content-type'] &&
-      headers['content-type'].indexOf('application/json') !== -1;
+    return response.headers['content-type'] &&
+      response.headers['content-type'].indexOf('application/json') !== -1;
   }
 
   private getLogParameters(extraParametersToLog = {}) {

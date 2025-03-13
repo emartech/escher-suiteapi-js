@@ -5,13 +5,17 @@
     "test": "mocha --require ts-node/register --extension ts ./src --recursive",
     "test:watch": "mocha --require ts-node/register --extension ts ./src --recursive --watch",
     "lint": "eslint ./src/**/*.ts",
-    "build": "rm -rf dist && tsc --project ./tsconfig.json",
+    "build": "rimraf dist && tsc --project ./tsconfig.json",
     "release": "CI=true semantic-release"
   },
   "publishConfig": {
     "access": "public"
   },
   "main": "dist/request.js",
+  "types": "dist/request.d.ts",
+  "files": [
+    "/dist/"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/emartech/escher-suiteapi-js.git"
@@ -50,6 +54,7 @@
     "eslint-plugin-security": "1.5.0",
     "mocha": "10.2.0",
     "nock": "13.4.0",
+    "rimraf": "6.0.1",
     "semantic-release": "19.0.5",
     "sinon": "14.0.0",
     "sinon-chai": "3.7.0",

@@ -33,10 +33,10 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
-    "@emartech/json-logger": "7.2.3",
-    "axios": "1.7.9",
-    "axios-retry": "4.5.0",
-    "escher-auth": "3.2.4"
+    "@emartech/json-logger": "^7.2.3",
+    "axios": "~1.7.9",
+    "axios-retry": "^4.5.0",
+    "escher-auth": "^3.2.4"
   },
   "devDependencies": {
     "@types/chai": "4.3.11",

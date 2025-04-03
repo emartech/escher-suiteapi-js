@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test: [lint, test]
+        test: [lint, test, build]
 
     steps:
       - name: Checkout code

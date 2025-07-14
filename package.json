@@ -45,7 +45,7 @@
     "@types/node": "20.17.46",
     "@types/sinon": "10.0.20",
     "@types/sinon-chai": "3.2.12",
-    "@typescript-eslint/parser": "8.32.0",
+    "@typescript-eslint/parser": "8.35.1",
     "chai": "4.5.0",
     "chai-subset": "1.6.0",
     "eslint": "8.57.1",

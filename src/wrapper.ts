@@ -116,7 +116,7 @@ export class RequestWrapper {
             typeof error.response.data === 'string') {
         try {
           data = JSON.parse(error.response.data);
-        } catch (_) {
+        } catch {
           data = error.response.data;
         }
       }

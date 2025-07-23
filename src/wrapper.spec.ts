@@ -264,7 +264,7 @@ describe('RequestWrapper', function() {
             try {
               await wrapper.send();
               throw new Error('should throw SuiteRequestError');
-            } catch (err) {
+            } catch {
               expect(source.cancel).to.have.been.calledWith();
             }
           });
@@ -279,7 +279,7 @@ describe('RequestWrapper', function() {
             try {
               await wrapper.send();
               throw new Error('should throw SuiteRequestError');
-            } catch (err) {
+            } catch {
               expect(source.cancel).not.to.have.been.calledWith();
             }
           });

@@ -36,7 +36,7 @@
     "@emartech/json-logger": "^7.2.3",
     "axios": "~1.11.0",
     "axios-retry": "^4.5.0",
-    "escher-auth": "^3.2.4"
+    "escher-auth": "^4.0.0"
   },
   "devDependencies": {
     "@types/chai": "4.3.20",

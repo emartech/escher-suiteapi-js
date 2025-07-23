@@ -4,6 +4,6 @@ import chaiSinon from 'sinon-chai';
 
 chai.use(chaiSinon);
 
-afterEach(function () {
+afterEach(function() {
   sinon.restore();
 });

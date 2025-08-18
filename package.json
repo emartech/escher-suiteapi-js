@@ -18,7 +18,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/emartech/escher-suiteapi-js.git"
+    "url": "git+https://github.com/emartech/escher-request.git"
   },
   "keywords": [
     "escher"
@@ -26,9 +26,9 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/emartech/escher-suiteapi-js/issues"
+    "url": "https://github.com/emartech/escher-request/issues"
   },
-  "homepage": "https://github.com/emartech/escher-suiteapi-js",
+  "homepage": "https://github.com/emartech/escher-request#readme",
   "engines": {
     "node": ">=20"
   },

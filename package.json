@@ -45,7 +45,7 @@
     "@types/sinon": "17.0.4",
     "@types/sinon-chai": "4.0.0",
     "@typescript-eslint/parser": "8.44.0",
-    "chai": "5.3.3",
+    "chai": "6.0.1",
     "cross-env": "10.0.0",
     "eslint": "9.35.0",
     "eslint-config-emarsys": "5.1.0",

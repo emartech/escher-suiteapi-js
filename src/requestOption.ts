@@ -58,7 +58,6 @@ export class EscherRequestOption implements RequestOptions {
     this.port = options.port || 443;
     this.host = host;
     this.rejectUnauthorized = options.rejectUnauthorized !== false;
-    this.headers = [['content-type', 'application/json'], ['host', host]];
     this.prefix = '';
     this.timeout = options.timeout || 15000;
     this.allowEmptyResponse = false;
@@ -66,11 +65,10 @@ export class EscherRequestOption implements RequestOptions {
     this.keepAlive = !!options.keepAlive;
     this.retryConfig = options.retryConfig || null;
 
-    if (!options) {
-      options = {};
-    }
+    Object.assign(this, options || {});
 
-    Object.assign(this, options);
+    this.setHeader(['content-type', 'application/json']);
+    this.setHeader(['host', host]);
   }
 
   public setToSecure(port: number, rejectUnauthorized: boolean) {

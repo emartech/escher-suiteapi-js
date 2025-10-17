@@ -48,6 +48,21 @@ describe('EscherRequestOption', function() {
       expect(options.host).to.eql('example-host');
       expect(options.prefix).to.eql('/api/services');
     });
+
+    it('should populate headers coming from options and preserve mandatory headers', function() {
+      const options = EscherRequestOption.create({
+        host: 'example-host',
+        headers: [['header-name', 'header-value']]
+      }, '/api-test', true);
+
+      expect(options.rejectUnauthorized).to.eql(true);
+      expect(options.host).to.eql('example-host');
+      expect(options.headers).to.deep.equal([
+        ['header-name', 'header-value'],
+        ['content-type', 'application/json'],
+        ['host', 'example-host']
+      ]);
+    });
   });
 
   describe('header handling', function() {
